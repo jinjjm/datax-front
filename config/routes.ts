@@ -29,6 +29,34 @@ export default [
     component: './Welcome',
   },
   {
+    path: '/datamarket',
+    name: '数据集市管理',
+    icon: 'icon-shouyedianpujishishangcheng',
+    access: 'canAdmin',
+    routes: [
+      {
+        path: '/datamarket',
+        redirect: '/datamarket/data-service',
+      },
+      {
+        path: '/datamarket/data-service',
+        name: '数据服务',
+        icon: 'icon-bianjiwenjian',
+        component: './DataMarket/DataService',
+      },
+      {
+        path: '/datamarket/data-service/create-new',
+        component:'./DataMarket/DataService/components/CreateNewApiService'
+      },
+      {
+        path: '/datamarket/data-masking',
+        name: '数据脱敏',
+        icon: 'icon-bianjiwenjian',
+        component: './Welcome',
+      },
+    ],
+  },
+  {
     path: '/admin',
     name: 'admin',
     icon: 'crown',

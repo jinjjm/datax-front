@@ -98,4 +98,22 @@ declare namespace API {
     description?: string;
     type?: NoticeIconItemType;
   };
+
+  type ApiList = {
+    id: string;
+    apiName: string;
+    apiVersion: string;
+    apiUrl: string;
+    reqMethod: string;
+    resType: string;
+    deny?: any;
+    allow?: any;
+    rateLimit?: any;
+    executeConfig?: any;
+    reqParams?: any;
+    resParams?: any;
+    status: string;
+    createTime?: any;
+    remark?: any;
+}
 }
