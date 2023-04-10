@@ -115,5 +115,19 @@ declare namespace API {
     status: string;
     createTime?: any;
     remark?: any;
-}
+  };
+  type APIZiDuanTableType = {
+    columnName: string;
+    dataType: string;
+    dataLength: number;
+    dataPrecision?: any;
+    dataScale?: any;
+    columnKey: string;
+    columnNullable: string;
+    columnPosition: number;
+    dataDefault?: any;
+    columnComment: string;
+    reqable?: any;
+    resable: string;
+  };
 }

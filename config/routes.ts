@@ -46,7 +46,11 @@ export default [
       },
       {
         path: '/datamarket/data-service/create-new',
-        component:'./DataMarket/DataService/components/CreateNewApiService'
+        component: './DataMarket/DataService/components/CreateNewApiService',
+      },
+      {
+        path: '/datamarket/data-service/api-details',
+        component: './DataMarket/DataService/components/CreateNewApiService',
       },
       {
         path: '/datamarket/data-masking',
