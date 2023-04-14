@@ -19,15 +19,17 @@ export default () => {
         break;
       case 'delete':
         message.info('delete');
+        // cnoso
         deleteApiInfo(record?.id).then(() => action?.reload());
         break;
       case 'read':
         localStorage.setItem('api_id', record?.id);
-        localStorage.setItem('api_edit_status', 'true');
+        localStorage.setItem('api_edit_status', 'false');
         history.push('/datamarket/data-service/api-details/');
         break;
       case 'edit':
-        localStorage.setItem('api_edit_status', 'false');
+        localStorage.setItem('api_id', record?.id);
+        localStorage.setItem('api_edit_status', 'true');
         history.push('/datamarket/data-service/api-details');
         break;
     }
@@ -130,9 +132,10 @@ export default () => {
       cardBordered
       request={getApiList}
       rowKey="id"
-      search={{
-        labelWidth: 'auto',
-      }}
+      // search={{
+      //   labelWidth: 'auto',
+      // }}
+      search={false}
       options={{
         setting: {
           listsHeight: 400,

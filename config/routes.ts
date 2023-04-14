@@ -40,7 +40,7 @@ export default [
       },
       {
         path: '/datamarket/data-service',
-        name: '数据服务',
+        name: 'API管理',
         icon: 'icon-bianjiwenjian',
         component: './DataMarket/DataService',
       },
@@ -54,7 +54,7 @@ export default [
       },
       {
         path: '/datamarket/data-masking',
-        name: '数据脱敏',
+        name: 'API监控',
         icon: 'icon-bianjiwenjian',
         component: './Welcome',
       },

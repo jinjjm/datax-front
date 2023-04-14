@@ -30,7 +30,7 @@ export default {
       // 配置了这个可以从 http 代理到 https
       // 依赖 origin 的功能可能需要这个，比如 cookie
       changeOrigin: true,
-      pathRewrite: { '^/dataApis': '' },  
+      pathRewrite: { '^/dataApis': '' },
       // // 接受无效的https 证书
       // secure: false,
     },
@@ -49,7 +49,7 @@ export default {
   },
   pre: {
     '/api/': {
-      target: 'your pre url',
+      target: 'https://proapi.azurewebsites.net',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

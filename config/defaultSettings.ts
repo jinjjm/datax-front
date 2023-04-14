@@ -21,7 +21,7 @@ const Settings: ProLayoutProps & {
     locale: false,
   },
   colorWeak: false,
-  title: 'Ant Design Pro',
+  title: '数据xxx',
   pwa: false,
   logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   iconfontUrl: '//at.alicdn.com/t/c/font_4004148_tuemnzv1bvg.js',

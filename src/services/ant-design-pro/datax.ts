@@ -63,3 +63,25 @@ export async function getApiDetails(id: any) {
     method: 'GET',
   }).then((res) => res.data);
 }
+/** 下载API接口文档 */
+export async function downloadApiDoc(id: any) {
+  return request(`/dataApis/word/${id}`, {
+    method: 'POST',
+    responseType: 'blob',
+  })
+    .then((res: Blob | MediaSource) => {
+      //注意：如果res是二进制流字符串而不是blob，则需要通过new Blob([res])转化成blob
+      let downloadElement = document.createElement('a');
+      let href = window.URL.createObjectURL(res); //创建下载的链接
+      downloadElement.href = href;
+      downloadElement.download = '接口文档.docx'; //下载后文件名
+      document.body.appendChild(downloadElement);
+      downloadElement.style.display = 'none';
+      downloadElement.click(); //点击下载
+      document.body.removeChild(downloadElement); //下载完成移除元素
+      window.URL.revokeObjectURL(href); //释放掉blob对象
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}

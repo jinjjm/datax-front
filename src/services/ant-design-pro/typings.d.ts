@@ -130,4 +130,20 @@ declare namespace API {
     reqable?: any;
     resable: string;
   };
+  type reqParamsColumns = {
+    nullable: string;
+    paramName: string;
+    paramType: string;
+    whereType: string;
+    defaultValue: string;
+    exampleValue: string;
+    paramComment: string;
+  };
+  type resParamsColumns = {
+    dataType: string;
+    fieldName: string;
+    exampleValue: string;
+    fieldComment: string;
+    fieldAliasName?: any;
+  };
 }
