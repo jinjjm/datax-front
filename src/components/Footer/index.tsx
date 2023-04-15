@@ -7,7 +7,8 @@ const Footer: React.FC = () => {
   const intl = useIntl();
   const defaultMessage = intl.formatMessage({
     id: 'app.copyright.produced',
-    defaultMessage: '蚂蚁集团体验技术部出品',
+    defaultMessage: '河北工业大学-天津公路事业服务中心联合出品',
+    // defaultMessage: '蚂蚁集团体验技术部出品',
   });
 
   const currentYear = new Date().getFullYear();

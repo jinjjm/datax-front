@@ -445,6 +445,9 @@ export default () => {
           >
             编辑
           </a>
+          <a key="editable" onClick={() => message.info('脱敏操作')}>
+            脱敏
+          </a>
         </Space>
       ),
     },
@@ -490,7 +493,7 @@ export default () => {
             icon={<MyIcon type="icon-jiekou1" />}
             onClick={() => hhhistory.push('/datamarket/data-service')}
           >
-            接口示例
+            接口测试
           </Button>
           <Button type="dashed" icon={<MyIcon type="icon-fanhui" />} onClick={() => history.back()}>
             返回
@@ -652,6 +655,7 @@ export default () => {
           readonly={readonlyfrom}
           name="zhixing"
           title="执行配置"
+          layout={readonlyfrom ? 'horizontal' : 'vertical'}
           onFinish={async () => {
             console.log(
               formRef.current?.forEach((e) => {
@@ -755,10 +759,14 @@ export default () => {
               bordered
               // headerTitle={"请求参数"}
               columns={reqParamsColumns}
-              recordCreatorProps={{
-                // 每次新增的时候需要Key
-                record: () => ({ paramName: Date.now() }),
-              }}
+              recordCreatorProps={
+                readonlyfrom
+                  ? false
+                  : {
+                      // 每次新增的时候需要Key
+                      record: () => ({ paramName: Date.now() }),
+                    }
+              }
               onChange={setTableData_req}
               editable={{
                 type: 'multiple',

@@ -32,6 +32,9 @@ export default () => {
         localStorage.setItem('api_edit_status', 'true');
         history.push('/datamarket/data-service/api-details');
         break;
+      case 'test':
+        message.info('测试功能暂未开放');
+        break;
     }
   };
 
@@ -114,6 +117,7 @@ export default () => {
           key="actionGroup"
           onSelect={(key: any) => handlerOption(key, record, action)}
           menus={[
+            { key: 'test', name: '测试' },
             { key: 'copy', name: '拷贝' },
             { key: 'edit', name: '编辑' },
             { key: 'read', name: '查看' },

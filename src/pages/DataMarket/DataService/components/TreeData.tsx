@@ -90,7 +90,7 @@ const App: React.FC = () => {
     console.log('event', treeNode.event);
     console.log('node', treeNode.node);
     let x = treeNode.event?.currentTarget?.offsetLeft + treeNode.event?.currentTarget?.clientWidth;
-    let y = treeNode.event?.currentTarget?.offsetTop + 57;
+    let y = treeNode.event?.currentTarget?.offsetTop + 17;
     setNodeTreeItem({
       pageX: x,
       pageY: y,

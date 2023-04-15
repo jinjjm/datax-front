@@ -23,14 +23,8 @@ export default [
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-  },
-  {
     path: '/datamarket',
-    name: '数据集市管理',
+    name: '数据源',
     icon: 'icon-shouyedianpujishishangcheng',
     access: 'canAdmin',
     routes: [
@@ -40,7 +34,7 @@ export default [
       },
       {
         path: '/datamarket/data-service',
-        name: 'API管理',
+        name: '数据管理',
         icon: 'icon-bianjiwenjian',
         component: './DataMarket/DataService',
       },
@@ -54,35 +48,41 @@ export default [
       },
       {
         path: '/datamarket/data-masking',
-        name: 'API监控',
-        icon: 'icon-bianjiwenjian',
+        name: '数据监控',
+        icon: 'icon-Tab_shujujiankong',
         component: './Welcome',
       },
     ],
   },
   {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    routes: [
-      {
-        path: '/admin',
-        redirect: '/admin/sub-page',
-      },
-      {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        component: './Admin',
-      },
-    ],
+    path: '/welcome',
+    name: '数据服务',
+    icon: 'icon-weiwangguanicon-defuben-',
+    component: './Welcome',
   },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
-  },
+  // {
+  //   path: '/admin',
+  //   name: 'admin',
+  //   icon: 'crown',
+  //   access: 'canAdmin',
+  //   routes: [
+  //     {
+  //       path: '/admin',
+  //       redirect: '/admin/sub-page',
+  //     },
+  //     {
+  //       path: '/admin/sub-page',
+  //       name: 'sub-page',
+  //       component: './Admin',
+  //     },
+  //   ],
+  // },
+  // {
+  //   name: 'list.table-list',
+  //   icon: 'table',
+  //   path: '/list',
+  //   component: './TableList',
+  // },
   {
     path: '/',
     redirect: '/welcome',
