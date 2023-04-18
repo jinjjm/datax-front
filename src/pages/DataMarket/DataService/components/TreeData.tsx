@@ -49,7 +49,7 @@ generateList(defaultData);
 
 const App: React.FC = () => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
-  const [searchValue, setSearchValue] = useState('');
+  // const [searchValue, setSearchValue] = useState('');
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const [NodeTreeItem, setNodeTreeItem] = useState<{
     pageX?: any;

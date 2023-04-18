@@ -54,11 +54,11 @@ export default () => {
   // const [item_readonly, setItem_readonly] = useState(false);
   // const [item_readonly_params, setItem_readonly_params] = useState(false);
   const editableFormRef = useRef<EditableFormInstance>();
-  const editableFormRefreq = useRef<EditableFormInstance>();
+  // const editableFormRefreq = useRef<EditableFormInstance>();
   const editableFormRefres = useRef<EditableFormInstance>();
   const [tableData, setTableData] = useState([]);
   const [tableData_req, setTableData_req] = useState<any>([]);
-  const [tableData_res, setTableData_res] = useState([]);
+  // const [tableData_res, setTableData_res] = useState([]);
   const [tuominModal, settuominModal] = useState(false);
   const [modalData, setModalData] = useState<any>();
 
@@ -707,7 +707,7 @@ export default () => {
           }}
           layout={'horizontal'}
           submitter={{
-            render: (props, doms) => {
+            render: (props) => {
               return [
                 <Button type='primary' htmlType="button" key="submit" onClick={() => props.form?.submit?.()}>
                   确认
