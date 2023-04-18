@@ -9,6 +9,10 @@
  *
  * @doc https://umijs.org/docs/guides/proxy
  */
+/**
+ * 四个环境分别是：pro、   pre、    test、   dev环境，
+ * 中文名字：  生产环境、灰度环境、测试环境、开发环境
+ */
 export default {
   // 如果需要自定义本地开发服务器  请取消注释按需调整
   // dev: {
@@ -47,11 +51,16 @@ export default {
       pathRewrite: { '^': '' },
     },
   },
-  pre: {
+  pro: {
     '/api/': {
       target: 'https://proapi.azurewebsites.net',
       changeOrigin: true,
       pathRewrite: { '^': '' },
+    },
+    '/dataApis': {
+      target: 'http://10.1.40.85:7778/dataApis',
+      changeOrigin: true,
+      pathRewrite: { '^/dataApis': '' },
     },
   },
 };

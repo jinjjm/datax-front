@@ -1,13 +1,14 @@
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 
-import { Button, Form, Input, message, Row, Space } from 'antd';
+import { Button, Card, Form, Input, message, Row, Space } from 'antd';
 import DetailsTable from './components/DetailsTable';
 import TreeData from './components/TreeData';
+import TestDemo from './components/TestDemo';
 
 export default () => {
   return (
-    <PageContainer
-      extra={
+    <PageContainer title="API集市" >
+      <Card bordered >
         <Form onFinish={() => message.info('暂不支持查询')}>
           <Row>
             <Space>
@@ -22,14 +23,13 @@ export default () => {
             </Space>
           </Row>
         </Form>
-      }
-    >
-      <ProCard>
-        <ProCard tabs={{ type: 'card' }} title="API集市" colSpan="18%">
-          <ProCard.TabPane key="tab1" tab="内部数据">
+      </Card>
+      <ProCard bordered >
+        <ProCard tabs={{ type: 'card' }} colSpan="18%">
+          <ProCard.TabPane key="tab1" tab="输出接口" >
             <TreeData />
           </ProCard.TabPane>
-          <ProCard.TabPane key="tab2" tab="外部调用">
+          <ProCard.TabPane key="tab2" tab="输入接口" >
             <TreeData />
           </ProCard.TabPane>
         </ProCard>

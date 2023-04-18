@@ -29,7 +29,7 @@ export async function getApiList(
       pageSize: res.data.pageSize,
       current: res.current,
     };
-  });
+  }).catch((error) => console.log(error));
   return response;
 }
 
@@ -49,19 +49,19 @@ export async function getApiList(
 export async function copyApiInfo(id: any) {
   return request(`/dataApis/${id}/copy`, {
     method: 'POST',
-  });
+  }).catch((error) => console.log(error));
 }
 /** 删除API接口 */
 export async function deleteApiInfo(id: any) {
   return request(`/dataApis/${id}`, {
     method: 'DELETE',
-  });
+  }).catch((error: any) => console.log(error));
 }
 /** 根据id获取API详细信息 */
 export async function getApiDetails(id: any) {
   return request(`/dataApis/${id}`, {
     method: 'GET',
-  }).then((res) => res.data);
+  }).then((res: { data: any; }) => res.data).catch((error: any) => console.log(error));
 }
 /** 下载API接口文档 */
 export async function downloadApiDoc(id: any) {
@@ -81,7 +81,37 @@ export async function downloadApiDoc(id: any) {
       document.body.removeChild(downloadElement); //下载完成移除元素
       window.URL.revokeObjectURL(href); //释放掉blob对象
     })
-    .catch((error) => {
+    .catch((error: any) => {
       console.log(error);
     });
+}
+/** 修改api树的title */
+export async function updateTreeTitle(id: any, title: any) {
+  return request('/dataApis/updateTreeTitle', {
+    method: "POST",
+    data:{
+      id:id,
+      title:title,
+    }
+  }).catch((error: any) => console.log(error))
+
+}
+/** 添加api树的title */
+export async function addTreeTitle(id: any, title: any,pos:string) {
+  return request('/dataApis/addTreeTitle', {
+    method: "POST",
+    data:{
+      id:id,
+      pos:pos,
+      title:title,
+    }
+  }).catch((error: any) => console.log(error))
+
+}
+/** 删除api树的结构title */
+export async function deleteTreeTitle(id: any) {
+  return request('/dataApis/deleteTreeTitle', {
+    method: "POST",
+  }).catch((error: any) => console.log(error))
+
 }

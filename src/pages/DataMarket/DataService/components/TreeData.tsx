@@ -1,8 +1,9 @@
+import { addTreeTitle, deleteTreeTitle, updateTreeTitle } from '@/services/ant-design-pro/datax';
 import { MyIcon } from '@/services/utils/icon';
-import { ProForm, ProFormText } from '@ant-design/pro-components';
-import { message, Modal, Tooltip, Tree } from 'antd';
+import { ProForm, ProFormInstance, ProFormRadio, ProFormText } from '@ant-design/pro-components';
+import { message, Modal, Popconfirm, Tooltip, Tree } from 'antd';
 import type { DataNode } from 'antd/es/tree';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 const x = 3;
 const y = 2;
@@ -45,20 +46,6 @@ const generateList = (data: DataNode[]) => {
 };
 generateList(defaultData);
 
-// const getParentKey = (key: React.Key, tree: DataNode[]): React.Key => {
-//   let parentKey: React.Key;
-//   for (let i = 0; i < tree.length; i++) {
-//     const node = tree[i];
-//     if (node.children) {
-//       if (node.children.some((item) => item.key === key)) {
-//         parentKey = node.key;
-//       } else if (getParentKey(key, node.children)) {
-//         parentKey = getParentKey(key, node.children);
-//       }
-//     }
-//   }
-//   return parentKey!;
-// };
 
 const App: React.FC = () => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
@@ -72,11 +59,14 @@ const App: React.FC = () => {
     category?: number;
   }>();
   const [editModal, setEditModal] = useState(false);
+  const [addModal, setAddModal] = useState(false);
+  const modalFormRef = useRef<ProFormInstance<any>>();
 
   const onExpand = (newExpandedKeys: React.Key[]) => {
     setExpandedKeys(newExpandedKeys);
     console.log('ExpandedKeys : ', newExpandedKeys);
     setAutoExpandParent(false);
+    setNodeTreeItem({});
   };
   const onSelect = (keys: React.Key[], info: any) => {
     console.log('keys', keys);
@@ -115,21 +105,15 @@ const App: React.FC = () => {
   //   setAutoExpandParent(true);
   // };
   const handleAddSub = () => {
-    // 写自己的业务逻辑
     message.info('添加');
+    setAddModal(true);
   };
 
   const handleEditSub = () => {
-    // 写自己的业务逻辑
-    // message.info("编辑")
+    message.info("编辑")
     setEditModal(true);
   };
 
-  const handleDeleteSub = () => {
-    // 写自己的业务逻辑
-    message.info('删除');
-    setSearchValue('');
-  };
   const getNodeTreeMenu = () => {
     const { pageX, pageY } = { ...NodeTreeItem };
     return (
@@ -154,10 +138,12 @@ const App: React.FC = () => {
             <MyIcon type="icon-bianji" />
           </Tooltip>
         </div>
-        <div style={{ alignSelf: 'center', marginLeft: 10 }} onClick={handleDeleteSub}>
-          <Tooltip placement="bottom" title="删除">
-            <MyIcon type="icon-shanchu1" />
-          </Tooltip>
+        <div style={{ alignSelf: 'center', marginLeft: 10 }}>
+          <Popconfirm title="请再次确认删除" onConfirm={() => deleteTreeTitle(NodeTreeItem?.id)}>
+            <Tooltip placement="bottom" title="删除">
+              <MyIcon type="icon-shanchu1" />
+            </Tooltip>
+          </Popconfirm>
         </div>
       </div>
     );
@@ -205,7 +191,7 @@ const App: React.FC = () => {
         ],
       },
       {
-        title: '公路处',
+        title: '其他单位',
         key: '2',
         icon: <MyIcon type="icon-file" />,
         children: [
@@ -234,19 +220,61 @@ const App: React.FC = () => {
         onSelect={onSelect}
       />
       {NodeTreeItem?.category === 1 ? getNodeTreeMenu() : ''}
-      <Modal title="修改" open={editModal} footer={[]} onCancel={() => setEditModal(false)}>
+      <Modal title="修改API分组名称" open={editModal} footer={[]} onCancel={() => setEditModal(false)}>
         <ProForm
+          formRef={modalFormRef}
           name="edit"
           initialValues={{
-            name: NodeTreeItem?.name,
+            title: NodeTreeItem?.name,
             id: NodeTreeItem?.id,
           }}
           onFinish={async (values) => {
             console.log(values);
+            //修改tree-data
+            updateTreeTitle(values?.id, values?.title);
             setEditModal(false);
           }}
         >
           <ProFormText width="md" name="id" hidden />
+          <ProFormText
+            width="md"
+            name="title"
+            required
+            label="名称"
+            rules={[{ required: true, message: '这是必填项' }]}
+          />
+        </ProForm>
+      </Modal>
+      <Modal title="添加API分组" open={addModal} footer={[]} onCancel={() => setAddModal(false)}>
+        <ProForm
+          formRef={modalFormRef}
+          name="add"
+          initialValues={{
+            id: NodeTreeItem?.id,
+          }}
+          onFinish={async (values) => {
+            console.log(values);
+            addTreeTitle(values?.id, values?.name, values?.fenzu)
+            setAddModal(false);
+          }}
+          layout={'horizontal'}
+        >
+          <ProFormText width="md" name="id" hidden />
+          <ProFormRadio.Group
+            name={"fenzu"}
+            label="位置"
+            width="md"
+            options={[
+              {
+                label: '同级结构',
+                value: 'tongji',
+              },
+              {
+                label: '子集结构',
+                value: 'ziji',
+              },
+            ]}
+          />
           <ProFormText
             width="md"
             name="name"

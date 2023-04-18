@@ -3,6 +3,7 @@ import {
   EditableProTable,
   ProCard,
   ProColumns,
+  ProForm,
   ProFormDependency,
   ProFormDigit,
   ProFormInstance,
@@ -13,11 +14,14 @@ import {
   StepsForm,
 } from '@ant-design/pro-components';
 import { history as hhhistory } from '@umijs/max';
-import { Button, Col, message, Row, Space } from 'antd';
+import { Button, Col, message, Modal, Row, Space, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
 import { downloadApiDoc, getApiDetails } from '@/services/ant-design-pro/datax';
 import { MyIcon } from '@/services/utils/icon';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { handleAPIDetials } from '../services/Handle';
+import { nanoid } from 'nanoid';
 
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
@@ -40,18 +44,23 @@ const item_readonly = true;
  * 2、table新添加数据后，如果不想要无法删除，无法取消
  * 3、删除操作有问题
  * 4、请求拦截器的使用requestInterceptors
+ * 5 在默认可编辑状态下无法自动保存
  */
 export default () => {
   const formRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
+  const [editableKeys_req, setEditableRowKeys_req] = useState<React.Key[]>([]);
+  const [editableKeys_res, setEditableRowKeys_res] = useState<React.Key[]>([]);
   // const [item_readonly, setItem_readonly] = useState(false);
   // const [item_readonly_params, setItem_readonly_params] = useState(false);
   const editableFormRef = useRef<EditableFormInstance>();
   const editableFormRefreq = useRef<EditableFormInstance>();
   const editableFormRefres = useRef<EditableFormInstance>();
-  const [tableData, SetTableData] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [tableData_req, setTableData_req] = useState<any>([]);
   const [tableData_res, setTableData_res] = useState([]);
+  const [tuominModal, settuominModal] = useState(false);
+  const [modalData, setModalData] = useState<any>();
 
   let readonlyfrom = localStorage.getItem('api_edit_status') === 'false' ? true : false;
 
@@ -64,7 +73,7 @@ export default () => {
       readonly: true,
     },
     {
-      key: 'id',
+      key: 'col_id',
       hideInTable: true,
     },
     {
@@ -108,25 +117,11 @@ export default () => {
       dataIndex: 'columnKey',
       align: 'center',
       readonly: item_readonly,
-      request: async () => [
-        {
-          value: '1',
-          label: 'Y',
-        },
-        {
-          value: '2',
-          label: 'N',
-        },
-      ],
-      fieldProps: (_, { rowIndex }) => {
-        return {
-          onSelect: () => {
-            // 每次选中重置参数
-            editableFormRef.current?.setRowData?.(rowIndex, { fraction: [] });
-          },
-        };
+      valueType: 'select',
+      valueEnum: {
+        1: { text: '是' },
+        0: { text: '否', },
       },
-      render: (_) => (_ === '1' ? 'Y' : 'N'),
     },
     {
       title: '是否允许为空',
@@ -134,25 +129,11 @@ export default () => {
       dataIndex: 'columnNullable',
       align: 'center',
       readonly: item_readonly,
-      request: async () => [
-        {
-          value: '1',
-          label: 'Y',
-        },
-        {
-          value: '2',
-          label: 'N',
-        },
-      ],
-      fieldProps: (_, { rowIndex }) => {
-        return {
-          onSelect: () => {
-            // 每次选中重置参数
-            editableFormRef.current?.setRowData?.(rowIndex, { fraction: [] });
-          },
-        };
+      valueType: 'select',
+      valueEnum: {
+        1: { text: '是' },
+        0: { text: '否', },
       },
-      render: (_) => (_ === '1' ? 'Y' : 'N'),
     },
     {
       title: '列默认值',
@@ -173,76 +154,22 @@ export default () => {
       key: 'reqable',
       dataIndex: 'reqable',
       align: 'center',
-      request: async () => [
-        {
-          value: '1',
-          label: '是',
-        },
-        {
-          value: '2',
-          label: '否',
-        },
-      ],
-      fieldProps: (_, { rowIndex }) => {
-        return {
-          onSelect: () => {
-            // 每次选中重置参数
-            editableFormRef.current?.setRowData?.(rowIndex, { fraction: [] });
-          },
-        };
+      valueType: 'select',
+      valueEnum: {
+        1: { text: '是' },
+        0: { text: '否', },
       },
-      render: (_) => (_ === null ? '' : _ === '1' ? '是' : '否'),
     },
     {
       title: '是否作为返回参数',
       key: 'resable',
       dataIndex: 'resable',
       align: 'center',
-      request: async () => [
-        {
-          value: '1',
-          label: '是',
-        },
-        {
-          value: '2',
-          label: '否',
-        },
-      ],
-      fieldProps: (_, { rowIndex }) => {
-        return {
-          onSelect: () => {
-            // 每次选中重置参数
-            editableFormRef.current?.setRowData?.(rowIndex, { fraction: [] });
-          },
-        };
+      valueType: 'select',
+      valueEnum: {
+        1: { text: '是' },
+        0: { text: '否', },
       },
-      render: (_) => (_ === null ? '' : _ === '1' ? '是' : '否'),
-    },
-    {
-      title: '操作',
-      valueType: 'option',
-      align: 'center',
-      hideInTable: readonlyfrom,
-      render: (text, record, _, action) => (
-        <Space>
-          <a
-            key="editable"
-            onClick={() => {
-              action?.startEditable?.(record.columnName);
-            }}
-          >
-            编辑
-          </a>
-          {/* <a
-            key="delete"
-            onClick={() => {
-              SetTableData(tableData.filter((item: any) => item.columnName !== record.columnName));
-            }}
-          >
-            删除
-          </a> */}
-        </Space>
-      ),
     },
   ];
   const reqParamsColumns: ProColumns<API.reqParamsColumns>[] = [
@@ -252,10 +179,7 @@ export default () => {
       valueType: 'indexBorder',
       align: 'center',
       readonly: true,
-    },
-    {
-      key: 'id',
-      hideInTable: true,
+      key: 'sha?'
     },
     {
       title: '参数名称',
@@ -270,25 +194,15 @@ export default () => {
       dataIndex: 'nullable',
       align: 'center',
       // readonly: item_readonly,
-      request: async () => [
-        {
-          value: '0',
-          label: '否',
+      valueType: 'select',
+      valueEnum: {
+        0: {
+          text: '否',
         },
-        {
-          value: '1',
-          label: '是',
+        1: {
+          text: '是',
         },
-      ],
-      fieldProps: (_, { rowIndex }) => {
-        return {
-          onSelect: () => {
-            // 每次选中重置参数
-            editableFormRefreq.current?.setRowData?.(rowIndex, { fraction: [] });
-          },
-        };
       },
-      render: (_) => (_ === '1' ? '是' : '否'),
     },
     {
       title: '描述',
@@ -303,29 +217,14 @@ export default () => {
       dataIndex: 'paramType',
       align: 'center',
       // readonly: item_readonly,
-      request: async () => [
-        {
-          value: '1',
-          label: '字符串',
-        },
-        {
-          value: '0',
-          label: '整数',
-        },
-        {
-          value: '2',
-          label: '浮点数',
-        },
-      ],
-      fieldProps: (_, { rowIndex }) => {
-        return {
-          onSelect: () => {
-            // 每次选中重置参数
-            editableFormRefreq.current?.setRowData?.(rowIndex, { fraction: [] });
-          },
-        };
+      valueType: 'select',
+      valueEnum: {
+        1: { text: '字符串' },
+        2: { text: '整数' },
+        3: { text: '浮点数' },
+        4: { text: '时间' },
+        5: { text: '集合' },
       },
-      render: (_) => (_ === '1' ? '字符串' : _ === '0' ? '整数' : '浮点数'),
     },
     {
       title: '操作符',
@@ -333,29 +232,22 @@ export default () => {
       dataIndex: 'whereType',
       align: 'center',
       // readonly: item_readonly,
-      request: async () => [
-        {
-          value: '0',
-          label: '小于',
-        },
-        {
-          value: '1',
-          label: '等于',
-        },
-        {
-          value: '2',
-          label: '大于',
-        },
-      ],
-      fieldProps: (_, { rowIndex }) => {
-        return {
-          onSelect: () => {
-            // 每次选中重置参数
-            editableFormRefreq.current?.setRowData?.(rowIndex, { fraction: [] });
-          },
-        };
+      valueType: 'select',
+      valueEnum: {
+        1: { text: '= 等于' },
+        2: { text: '!= 不等于' },
+        3: { text: 'LIKE 模糊查询' },
+        4: { text: ' 左模糊查询' },
+        5: { text: ' 右模糊查询' },
+        6: { text: '> 大于' },
+        7: { text: '>= 大于等于' },
+        8: { text: '< 小于' },
+        9: { text: '<= 小于等于' },
+        10: { text: 'IS NULL 是否为空' },
+        11: { text: 'IS NOT NULL 是否不为空' },
+        12: { text: 'IN' },
+        13: { text: 'NOT IN' },
       },
-      render: (_) => (_ === '0' ? '小于' : _ === '1' ? '等于' : '大于'),
     },
     {
       title: '示例值',
@@ -376,18 +268,21 @@ export default () => {
       valueType: 'option',
       align: 'center',
       hideInTable: readonlyfrom,
-      render: (text, record, _, action) => (
-        <Space>
-          <a
-            key="editable"
-            onClick={() => {
-              action?.startEditable?.(record.paramName);
-            }}
-          >
-            编辑
-          </a>
-        </Space>
-      ),
+      render: () => {
+        return null;
+      },
+      // render: (text, record, _, action) => (
+      //   <Space>
+      //     <a
+      //       key="editable"
+      //       onClick={() => {
+      //         action?.startEditable?.(record.paramName);
+      //       }}
+      //     >
+      //       编辑
+      //     </a>
+      //   </Space>
+      // ),
     },
   ];
   const resParamsColumns: ProColumns<API.resParamsColumns>[] = [
@@ -397,9 +292,11 @@ export default () => {
       valueType: 'indexBorder',
       align: 'center',
       readonly: true,
+      key: 'sha??'
     },
     {
-      key: 'id',
+      key: 'col_id',
+      dataIndex: 'col_id',
       hideInTable: true,
     },
     {
@@ -445,7 +342,7 @@ export default () => {
           >
             编辑
           </a>
-          <a key="editable" onClick={() => message.info('脱敏操作')}>
+          <a key="editable" onClick={() => { settuominModal(true); setModalData(record); }}>
             脱敏
           </a>
         </Space>
@@ -458,7 +355,8 @@ export default () => {
     console.log(id);
     // let data;
     if (id && id !== 'new' && id !== '')
-      getApiDetails(id).then((res) => {
+      getApiDetails(id).then((response) => {
+        let res = handleAPIDetials(response);
         formRef?.current?.forEach((formInstanceRef: any) => {
           formInstanceRef?.current?.setFieldsValue({
             shuxing: res,
@@ -466,12 +364,17 @@ export default () => {
             canshu: res,
           });
         });
-        //
+        //设置默认可编辑表格——打开所有行
+        setEditableRowKeys(() => (res?.executeConfig?.fieldParams || [])
+          .map((item: { col_id: any; }) => item.col_id));
+        setEditableRowKeys_req(() => (res?.reqParams || [])
+          .map((item: { col_id: any; }) => item.col_id));
+        setEditableRowKeys_res(() => (res?.resParams || [])
+          .map((item: { col_id: any; }) => item.col_id));
         // 给每个可编辑表格赋值, 但并不能对table数据进行初始化
-        SetTableData(res?.executeConfig?.fieldParams);
-        setTableData_req(res?.reqParams);
-        setTableData_res(res?.resParams);
-        console.log(res?.reqParams);
+        // setTableData(res?.executeConfig?.fieldParams);
+        // setTableData_req(res?.reqParams);
+        // setTableData_res(res?.resParams);
       });
   }, [localStorage.getItem('api_id'), history.state]);
 
@@ -501,9 +404,7 @@ export default () => {
         </Space>
       }
     >
-      <StepsForm<{
-        name: string;
-      }>
+      <StepsForm
         formMapRef={formRef}
         onFinish={async (values) => {
           console.log(values);
@@ -656,15 +557,8 @@ export default () => {
           name="zhixing"
           title="执行配置"
           layout={readonlyfrom ? 'horizontal' : 'vertical'}
-          onFinish={async () => {
-            console.log(
-              formRef.current?.forEach((e) => {
-                e?.current?.getFieldsValue();
-              }),
-            );
-            console.log(tableData);
-            console.log(tableData_req);
-            console.log(tableData_res);
+          onFinish={async (values: any) => {
+            console.log(values)
             await waitTime(500);
             return true;
           }}
@@ -682,7 +576,7 @@ export default () => {
               2: '脚本模式',
             }}
             rules={[{ required: request_item }]}
-            // 根据选项下面展示不同内容
+          // 根据选项下面展示不同内容
           />
           <ProFormSelect
             name={['zhixing', 'tableName']}
@@ -713,32 +607,17 @@ export default () => {
                     <EditableProTable<API.APIZiDuanTableType>
                       editableFormRef={editableFormRef}
                       scroll={{ x: 1050 }}
-                      rowKey="columnName"
+                      rowKey="col_id"
                       headerTitle="字段列表"
                       name={['zhixing', 'fieldParams']}
                       bordered
                       columns={columns}
-                      // recordCreatorProps={
-                      //   readonlyfrom
-                      //     ? false
-                      //     : {
-                      //       position: 'bottom',
-                      //       // 每次新增的时候需要Key
-                      //       record: () => ({ columnName: (Math.random() * 1000000).toFixed(0) }),
-                      //     }
-                      // }
                       recordCreatorProps={false}
-                      onChange={SetTableData}
+                      onChange={setTableData}
                       editable={{
-                        // type: 'multiple',
+                        type: 'multiple',
                         editableKeys,
-                        onSave: async (rowKey, data, row) => {
-                          console.log(rowKey, data, row);
-                          setItem_readonly(true);
-                          await waitTime(500);
-                        },
                         onChange: setEditableRowKeys,
-                        actionRender: (row, config, dom) => [dom.save, dom.cancel],
                       }}
                     />
                   </>
@@ -752,29 +631,26 @@ export default () => {
         <StepsForm.StepForm readonly={readonlyfrom} name="canshu" title="参数配置">
           <ProCard title="请求参数" headerBordered type="inner">
             <EditableProTable<API.reqParamsColumns>
-              editableFormRef={editableFormRefreq}
+              // editableFormRef={editableFormRefreq}
               scroll={{ x: 1000 }}
-              rowKey="paramName"
+              rowKey="col_id"
               name={['canshu', 'reqParams']}
               bordered
-              // headerTitle={"请求参数"}
               columns={reqParamsColumns}
+              value={tableData_req}
               recordCreatorProps={
                 readonlyfrom
                   ? false
                   : {
-                      // 每次新增的时候需要Key
-                      record: () => ({ paramName: Date.now() }),
-                    }
+                    // 每次新增的时候需要Key
+                    record: () => ({ col_id: nanoid() }),
+                  }
               }
               onChange={setTableData_req}
               editable={{
                 type: 'multiple',
-                editableKeys,
-                onChange: setEditableRowKeys,
-                onValuesChange: (record, recordList) => {
-                  setTableData_req(recordList);
-                },
+                editableKeys: editableKeys_req,
+                onChange: setEditableRowKeys_req,
                 actionRender: (row, config, defaultDoms) => [defaultDoms.delete],
               }}
             />
@@ -783,7 +659,7 @@ export default () => {
             <EditableProTable<API.resParamsColumns>
               editableFormRef={editableFormRefres}
               scroll={{ x: 1000 }}
-              rowKey="fieldName"
+              rowKey="col_id"
               name={['canshu', 'resParams']}
               bordered
               columns={resParamsColumns}
@@ -791,27 +667,108 @@ export default () => {
                 readonlyfrom
                   ? false
                   : {
-                      position: 'bottom',
-                      // 每次新增的时候需要Key
-                      record: () => ({ fieldName: (Math.random() * 1000000).toFixed(0) }),
-                    }
+                    position: 'bottom',
+                    // 每次新增的时候需要Key
+                    record: () => ({ col_id: nanoid() }),
+                  }
               }
               onChange={setTableData_res}
               editable={{
-                // type: 'multiple',
-                editableKeys,
-                onSave: async (rowKey, data, row) => {
-                  console.log(rowKey, data, row);
-                  setItem_readonly_params(true);
-                  await waitTime(500);
-                },
-                onChange: setEditableRowKeys,
-                actionRender: (row, config, dom) => [dom.save, dom.cancel],
+                type: 'multiple',
+                editableKeys: editableKeys_res,
+                onChange: setEditableRowKeys_res,
+                actionRender: (row, config, dom) => [
+                  dom.delete,
+                  <a key="editable" onClick={() => {
+                    settuominModal(true);
+                    setModalData(row);
+                  }}>
+                    脱敏
+                  </a>
+                ],
               }}
             />
           </ProCard>
         </StepsForm.StepForm>
       </StepsForm>
-    </ProCard>
+      <Modal
+        title={"字段脱敏"}
+        open={tuominModal}
+        onCancel={() => settuominModal(false)}
+        footer={[]}
+      >
+        <ProForm
+          name="tuomin"
+          initialValues={{
+            fieldName: modalData?.fieldName,
+          }}
+          onFinish={async (values) => {
+            console.log(values)
+          }}
+          layout={'horizontal'}
+          submitter={{
+            render: (props, doms) => {
+              return [
+                <Button type='primary' htmlType="button" key="submit" onClick={() => props.form?.submit?.()}>
+                  确认
+                </Button>
+              ]
+            }
+          }}
+        >
+          <ProFormText
+            width="md"
+            name="fieldName"
+            required
+            label="字段名称"
+            disabled
+          />
+          <ProFormSelect
+            name={"leixing"}
+            label="脱敏类型"
+            width="md"
+            required
+            valueEnum={{
+              1: '正则替换',
+              2: '加密算法',
+            }}
+          />
+          <ProFormDependency name={["leixing", "guize"]}>
+            {({ leixing }) => {
+              return (
+                <ProFormSelect
+                  name={"guize"}
+                  label="脱敏规则"
+                  width="md"
+                  required
+                  valueEnum={leixing === '1' ? {
+                    1: '中文姓名',
+                    2: '身份证号',
+                    3: '周定电话',
+                    4: '手机号码',
+                    5: '地址',
+                    6: '电子邮箱',
+                    7: '银行卡号',
+                    8: '公司开户银行联号',
+                  } : {
+                    1: 'BASE64加密',
+                    2: 'MD5加密',
+                    3: 'SHA_1加密',
+                    4: 'SHA 256加密',
+                    5: 'AES加密',
+                    6: 'DES加密',
+                  }}
+                  addonAfter={
+                    <Tooltip placement="bottom" title="添加自定义规则">
+                      <PlusCircleOutlined onClick={() => message.info("暂不支持添加")} />
+                    </Tooltip>}
+                />
+              )
+            }}
+          </ProFormDependency>
+
+        </ProForm>
+      </Modal>
+    </ProCard >
   );
 };

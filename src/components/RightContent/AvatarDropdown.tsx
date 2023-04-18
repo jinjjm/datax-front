@@ -17,7 +17,7 @@ export type GlobalHeaderRightProps = {
 export const AvatarName = () => {
   const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState || {};
-  return <span className="anticon">{currentUser?.name}</span>;
+  return <span className="anticon" style={{color:'#fff'}}>{currentUser?.name}</span>;
 };
 
 export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, children }) => {
@@ -51,7 +51,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
       cursor: 'pointer',
       borderRadius: token.borderRadius,
       '&:hover': {
-        backgroundColor: token.colorBgTextHover,
+        backgroundColor: 'token.colorBgTextHover',
       },
     };
   });

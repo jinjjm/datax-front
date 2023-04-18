@@ -20,6 +20,7 @@ export const Question = () => {
       style={{
         display: 'flex',
         height: 26,
+        color:'#fff'
       }}
       onClick={() => {
         window.open('https://pro.ant.design/docs/getting-started');

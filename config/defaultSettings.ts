@@ -28,6 +28,29 @@ const Settings: ProLayoutProps & {
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式
     //https://procomponents.ant.design/components/layout#%E9%80%9A%E8%BF%87-token-%E4%BF%AE%E6%94%B9%E6%A0%B7%E5%BC%8F
+    header: {
+      colorBgHeader: '#001529',
+      colorHeaderTitle: '#fff',
+      colorTextMenu: '#dfdfdf',
+      colorTextMenuSecondary: '#dfdfdf',
+      colorTextMenuSelected: '#fff',
+      colorBgMenuItemSelected: '#22272b',
+      colorTextMenuActive: 'rgba(255,255,255,0.85)',//menuItem hover 的选中字体颜色
+      colorTextRightActionsItem: '#fff', // 右上角字体颜色
+      // colorBgRightActionsItemHover:'#fff',
+      heightLayoutHeader:60,
+    },
+    colorTextAppListIconHover: '#fff',
+    colorTextAppListIcon: '#fff',
+    sider: {
+      colorMenuBackground: '#001529',
+      colorMenuItemDivider: '#dfdfdf',
+      colorBgMenuItemHover: '#f6f6f6',
+      colorTextMenu: '#dfdfdf',
+      colorTextMenuSelected: '#1890FF',
+      colorTextMenuActive: '#dfdfdf',
+      colorBgMenuItemCollapsedHover: '#242424',
+    },
   },
 };
 

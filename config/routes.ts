@@ -34,7 +34,7 @@ export default [
       },
       {
         path: '/datamarket/data-service',
-        name: '数据管理',
+        name: '服务管理',
         icon: 'icon-bianjiwenjian',
         component: './DataMarket/DataService',
       },
@@ -47,8 +47,14 @@ export default [
         component: './DataMarket/DataService/components/CreateNewApiService',
       },
       {
+        path: '/datamarket/data-source',
+        name: '服务源',
+        icon: 'icon-Tab_shujujiankong',
+        component: './DataMarket/DataSource',
+      },
+      {
         path: '/datamarket/data-masking',
-        name: '数据监控',
+        name: '服务监控',
         icon: 'icon-Tab_shujujiankong',
         component: './Welcome',
       },
@@ -85,7 +91,7 @@ export default [
   // },
   {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/datamarket',
   },
   {
     path: '*',

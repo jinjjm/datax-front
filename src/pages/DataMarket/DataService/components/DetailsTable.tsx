@@ -101,13 +101,6 @@ export default () => {
       ),
     },
     {
-      title: '创建时间',
-      key: 'showTime',
-      dataIndex: 'createTime',
-      valueType: 'date',
-      hideInSearch: true,
-    },
-    {
       title: '操作',
       valueType: 'option',
       key: 'option',
@@ -118,9 +111,9 @@ export default () => {
           onSelect={(key: any) => handlerOption(key, record, action)}
           menus={[
             { key: 'test', name: '测试' },
-            { key: 'copy', name: '拷贝' },
             { key: 'edit', name: '编辑' },
             { key: 'read', name: '查看' },
+            { key: 'copy', name: '拷贝' },
             { key: 'delete', name: '删除' },
           ]}
         >

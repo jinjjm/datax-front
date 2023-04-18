@@ -78,14 +78,6 @@ export default () => {
       title: '描述',
       dataIndex: 'decs',
     },
-    {
-      title: '操作',
-      valueType: 'option',
-      width: 250,
-      render: () => {
-        return null;
-      },
-    },
   ];
 
   return (
@@ -105,20 +97,20 @@ export default () => {
             id: Date.now(),
           }),
         }}
-        toolBarRender={() => {
-          return [
-            <Button
-              type="primary"
-              key="save"
-              onClick={() => {
-                // dataSource 就是当前数据，可以调用 api 将其保存
-                console.log(dataSource);
-              }}
-            >
-              保存数据
-            </Button>,
-          ];
-        }}
+        // toolBarRender={() => {
+        //   return [
+        //     <Button
+        //       type="primary"
+        //       key="save"
+        //       onClick={() => {
+        //         // dataSource 就是当前数据，可以调用 api 将其保存
+        //         console.log(dataSource);
+        //       }}
+        //     >
+        //       保存数据
+        //     </Button>,
+        //   ];
+        // }}
         editable={{
           type: 'multiple',
           editableKeys,
