@@ -58,7 +58,7 @@ export default () => {
   const editableFormRefres = useRef<EditableFormInstance>();
   const [tableData, setTableData] = useState([]);
   const [tableData_req, setTableData_req] = useState<any>([]);
-  // const [tableData_res, setTableData_res] = useState([]);
+  const [tableData_res, setTableData_res] = useState([]);
   const [tuominModal, settuominModal] = useState(false);
   const [modalData, setModalData] = useState<any>();
 
@@ -234,19 +234,19 @@ export default () => {
       // readonly: item_readonly,
       valueType: 'select',
       valueEnum: {
-        1: { text: '= 等于' },
-        2: { text: '!= 不等于' },
-        3: { text: 'LIKE 模糊查询' },
-        4: { text: ' 左模糊查询' },
-        5: { text: ' 右模糊查询' },
-        6: { text: '> 大于' },
-        7: { text: '>= 大于等于' },
-        8: { text: '< 小于' },
-        9: { text: '<= 小于等于' },
-        10: { text: 'IS NULL 是否为空' },
-        11: { text: 'IS NOT NULL 是否不为空' },
-        12: { text: 'IN' },
-        13: { text: 'NOT IN' },
+        1: { text: '等于' },
+        2: { text: '不等于' },
+        3: { text: '模糊查询' },
+        4: { text: '左模糊查询' },
+        5: { text: '右模糊查询' },
+        6: { text: '大于' },
+        7: { text: '大于等于' },
+        8: { text: '小于' },
+        9: { text: '小于等于' },
+        10: { text: '是否为空' },
+        11: { text: '是否不为空' },
+        12: { text: '包含' },
+        13: { text: '不包含' },
       },
     },
     {
@@ -704,6 +704,7 @@ export default () => {
           }}
           onFinish={async (values) => {
             console.log(values)
+            setModalData(false);
           }}
           layout={'horizontal'}
           submitter={{

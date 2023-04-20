@@ -104,6 +104,7 @@ const Login: React.FC = () => {
 
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
+    console.log("userInfo: ", userInfo)
     if (userInfo) {
       flushSync(() => {
         setInitialState((s) => ({
@@ -118,6 +119,8 @@ const Login: React.FC = () => {
     try {
       // 登录
       const msg = await login({ ...values, type });
+      console.log("handleSubmit msg", msg);
+
       if (msg.status === 'ok') {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
@@ -125,11 +128,12 @@ const Login: React.FC = () => {
         });
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
+        console.log("await fetchUserInfo();")
         const urlParams = new URL(window.location.href).searchParams;
         history.push(urlParams.get('redirect') || '/');
         return;
       }
-      console.log(msg);
+      console.log("登陆失败", msg);
       // 如果失败去设置用户错误信息
       setUserLoginState(msg);
     } catch (error) {

@@ -53,10 +53,10 @@ export default [
         component: './DataMarket/DataSource',
       },
       {
-        path: '/datamarket/data-masking',
+        path: '/datamarket/data-monitoring',
         name: '服务监控',
         icon: 'icon-Tab_shujujiankong',
-        component: './Welcome',
+        component: './DataMarket/DataMonitoring',
       },
     ],
   },
