@@ -38,6 +38,11 @@ export default {
       // // 接受无效的https 证书
       // secure: false,
     },
+    '/sources': {
+      target: 'http://10.1.40.85:7778/sources',
+      changeOrigin: true,
+      pathRewrite: { '^/sources': '' },
+    },
   },
   /**
    * @name 详细的代理配置

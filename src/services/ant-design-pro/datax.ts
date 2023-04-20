@@ -29,7 +29,7 @@ export async function getApiList(
       pageSize: res.data.pageSize,
       current: res.current,
     };
-  }).catch((error) => console.log(error));
+  }).catch((error: any) => console.log(error));
   return response;
 }
 
@@ -89,21 +89,21 @@ export async function downloadApiDoc(id: any) {
 export async function updateTreeTitle(id: any, title: any) {
   return request('/dataApis/updateTreeTitle', {
     method: "POST",
-    data:{
-      id:id,
-      title:title,
+    data: {
+      id: id,
+      title: title,
     }
   }).catch((error: any) => console.log(error))
 
 }
 /** 添加api树的title */
-export async function addTreeTitle(id: any, title: any,pos:string) {
+export async function addTreeTitle(id: any, title: any, pos: string) {
   return request('/dataApis/addTreeTitle', {
     method: "POST",
-    data:{
-      id:id,
-      pos:pos,
-      title:title,
+    data: {
+      id: id,
+      pos: pos,
+      title: title,
     }
   }).catch((error: any) => console.log(error))
 
@@ -114,4 +114,43 @@ export async function deleteTreeTitle(id: any) {
     method: "POST",
   }).catch((error: any) => console.log(error))
 
+}
+/** 测试连通性 */
+export async function testConnectivityApi(data = {}) {
+  let res = await request('/sources/checkConnection', {
+    method: "POST",
+    data: data,
+  }).catch((error: any) => console.log(error))
+  return res?.code;
+}
+/** 元数据同步 */
+export async function testSync(id: any) {
+  return request(`/sources/sync/${id}`, {
+    method: "POST",
+  }).catch((error: any) => console.log(error))
+}
+/** 添加 */
+export async function addSources(data = {}) {
+  return request('/sources', {
+    method: "POST",
+    data: data,
+  }).catch((error: any) => console.log(error))
+}
+/** 数据源分页查询 */
+export async function getSourcesPages(params: any) {
+  return request('/sources/page', {
+    method: "GET",
+    params: {
+      pageSize: params.pageSize,
+      pageNum: params.current,
+    },
+  }).then((res: any) => res.data).catch((error: any) => console.log(error))
+}
+// /sources/batch/{ids}
+
+/** 删除API接口 */
+export async function deleteDataSource(ids: any) {
+  return request(`/sources/batch/${ids}`, {
+    method: 'DELETE',
+  }).catch((error: any) => console.log(error));
 }
