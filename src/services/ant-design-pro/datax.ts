@@ -152,7 +152,7 @@ export async function deleteDataSource(ids: any) {
     method: 'DELETE',
   }).catch((error: any) => console.log(error));
 }
-/** 更新数据源开篇接口 */
+/** 更新数据源卡片接口 */
 export async function updateDataSource({ id = "", params = {} }) {
   return request(`/sources/${id}`, {
     method: 'PUT',

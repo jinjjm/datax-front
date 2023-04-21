@@ -48,10 +48,13 @@ export const handleAPIDetials = (response: any) => {
      * reqParams
      * resParams
      */
-    const { executeConfig, reqParams, resParams } = response;
+    const { allow, deny, executeConfig, reqParams, resParams } = response;
     const { fieldParams } = executeConfig;
+    // 判断黑名单还是白名单
+    let allow_or_deny = deny ? "hei" : allow ? "bai" : "";
     return {
         ...response,
+        allow_or_deny: allow_or_deny,
         executeConfig: {
             ...executeConfig,
             fieldParams: handleTransforNum(

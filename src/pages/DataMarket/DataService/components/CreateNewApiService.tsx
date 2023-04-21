@@ -14,7 +14,7 @@ import {
   StepsForm,
 } from '@ant-design/pro-components';
 import { history as hhhistory } from '@umijs/max';
-import { Button, Col, message, Modal, Row, Space, Tooltip } from 'antd';
+import { Button, Checkbox, Col, message, Modal, Row, Space, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
 import { downloadApiDoc, getApiDetails } from '@/services/ant-design-pro/datax';
@@ -40,11 +40,13 @@ const width_form_item = 'xl';
 const request_item = true;
 const item_readonly = true;
 /**
- * 问题：1、每个下拉框确认
- * 2、table新添加数据后，如果不想要无法删除，无法取消
- * 3、删除操作有问题
+ * 问题：解决---1、每个下拉框确认
+ * 删除--2、table新添加数据后，如果不想要无法删除，无法取消
+ * 解决--3、删除操作有问题
  * 4、请求拦截器的使用requestInterceptors
- * 5 在默认可编辑状态下无法自动保存
+ * 解决--5 在默认可编辑状态下无法自动保存
+ * 6、步骤二和步骤三的联动性，根据步骤二所选的请求、返回参数来确认步骤三的表格问题
+ * 7、最后的表单提交接口未完成
  */
 export default () => {
   const formRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
@@ -154,21 +156,21 @@ export default () => {
       key: 'reqable',
       dataIndex: 'reqable',
       align: 'center',
-      valueType: 'select',
+      valueType: 'checkbox',
       valueEnum: {
-        1: { text: '是' },
-        0: { text: '否', },
-      },
+        1: true,
+        0: false,
+      }
     },
     {
       title: '是否作为返回参数',
       key: 'resable',
       dataIndex: 'resable',
       align: 'center',
-      valueType: 'select',
+      valueType: 'checkbox',
       valueEnum: {
-        1: { text: '是' },
-        0: { text: '否', },
+        1: true,
+        0: false,
       },
     },
   ];
@@ -186,7 +188,6 @@ export default () => {
       key: 'paramName',
       dataIndex: 'paramName',
       align: 'center',
-      //readonly: item_readonly_params,
     },
     {
       title: '是否允许为空',
@@ -194,14 +195,10 @@ export default () => {
       dataIndex: 'nullable',
       align: 'center',
       // readonly: item_readonly,
-      valueType: 'select',
+      valueType: 'checkbox',
       valueEnum: {
-        0: {
-          text: '否',
-        },
-        1: {
-          text: '是',
-        },
+        0: false,
+        1: true,
       },
     },
     {
@@ -410,6 +407,15 @@ export default () => {
           console.log(values);
           await waitTime(1000);
           message.success('提交成功');
+          const { shuxing } = values;
+          console.log('传参格式：', {
+            ...values,
+            shuxing: {
+              allow: null,
+              deny: null,
+              ...shuxing,
+            }
+          })
         }}
         formProps={{
           validateMessages: {
@@ -426,14 +432,13 @@ export default () => {
           layout={'horizontal'}
           name="shuxing"
           title="属性配置"
-          onFinish={async () => {
-            console.log(
-              formRef?.current?.forEach((e) => {
-                e?.current?.getFieldsValue();
-              }),
-            );
+          onFinish={async (values) => {
+            console.log(values);
             await waitTime(500);
             return true;
+          }}
+          initialValues={{
+            "shuxing": { "status": "1" },
           }}
         >
           <ProFormText
@@ -477,18 +482,44 @@ export default () => {
             rules={[{ required: request_item }]}
             width={width_form_item}
           />
-          <ProFormTextArea
-            name={['shuxing', 'deny']}
-            label="IP黑名单"
+          <ProFormRadio.Group
+            name={['shuxing', 'allow_or_deny']}
+            label="限制条件"
             width={width_form_item}
-            tooltip="请使用英文逗号做分割"
+            options={[
+              {
+                label: '黑名单',
+                value: 'hei',
+              },
+              {
+                label: '白名单',
+                value: 'bai',
+              },
+            ]}
           />
-          <ProFormTextArea
-            name={['shuxing', 'allow']}
-            label="IP白名单"
-            width={width_form_item}
-            tooltip="请使用英文逗号做分割"
-          />
+          <ProFormDependency name={['shuxing', 'allow_or_deny']}>
+            {({ shuxing }) => {
+              if (shuxing?.allow_or_deny === 'hei')
+                return (
+                  <ProFormTextArea
+                    name={['shuxing', 'deny']}
+                    label="IP黑名单"
+                    width={width_form_item}
+                    tooltip="请使用英文逗号做分割"
+                  />
+                )
+              else if (shuxing?.allow_or_deny === 'bai')
+                return (
+                  <ProFormTextArea
+                    name={['shuxing', 'allow']}
+                    label="IP白名单"
+                    width={width_form_item}
+                    tooltip="请使用英文逗号做分割"
+                  />
+                )
+              else return null;
+            }}
+          </ProFormDependency>
           <ProFormRadio.Group
             name={['shuxing', 'rateLimit', 'enable']}
             label="是否限流"
