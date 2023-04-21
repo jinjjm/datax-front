@@ -1,35 +1,41 @@
-# 待开发
-# Ant Design Pro
 
-This project is initialized with [Ant Design Pro](https://pro.ant.design). Follow is the quick guide for how to use.
+# 介绍
+基于[Ant Design Pro](https://pro.ant.design)框架模板二次开发；
 
-## Environment Prepare
+对开源工具datax的前端使用[React](https://react.dev/)进行重写，并按需求添加新功能；
 
-Install `node_modules`:
 
-```bash
-npm install
-```
-
-or
+## 环境配置
+安装依赖 `node_modules`
 
 ```bash
-yarn add xxx
+yarn
+# yarn add xxx
 ```
 
-### Start project
+### 项目启动
 
 ```bash
 yarn start
 ```
 
-### Build project
+## 提交Git仓库
+```bash
+git add .
+git commit -m '描述' --no-verify # --no-verify忽略检查
+git pull
+git push
+```
+
+### 打包
 
 ```bash
 yarn build
 ```
 
-### Check code style
+项目打包生成dist文件，当前打包文件放置在服务器/home/webpages目录中，服务器采用nginx做请求代理
+
+### 代码规范化检查
 
 ```bash
 npm run lint
@@ -41,10 +47,3 @@ npm run lint
 npm test
 ```
 
-## 提交Git仓库
-```bash
-git add .
-git commit -m '描述' --no-verify # --no-verify忽略检查
-git pull
-git push
-```
