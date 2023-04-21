@@ -50,6 +50,7 @@ const item_readonly = true;
  */
 export default () => {
   const formRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
+  const modalFormRef = useRef<ProFormInstance<any>>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
   const [editableKeys_req, setEditableRowKeys_req] = useState<React.Key[]>([]);
   const [editableKeys_res, setEditableRowKeys_res] = useState<React.Key[]>([]);
@@ -62,7 +63,6 @@ export default () => {
   const [tableData_req, setTableData_req] = useState<any>([]);
   const [tableData_res, setTableData_res] = useState([]);
   const [tuominModal, settuominModal] = useState(false);
-  const [modalData, setModalData] = useState<any>();
 
   let readonlyfrom = localStorage.getItem('api_edit_status') === 'false' ? true : false;
 
@@ -329,21 +329,7 @@ export default () => {
       valueType: 'option',
       align: 'center',
       hideInTable: readonlyfrom,
-      render: (text, record, _, action) => (
-        <Space>
-          <a
-            key="editable"
-            onClick={() => {
-              action?.startEditable?.(record.fieldName);
-            }}
-          >
-            编辑
-          </a>
-          <a key="editable" onClick={() => { settuominModal(true); setModalData(record); }}>
-            脱敏
-          </a>
-        </Space>
-      ),
+      render: () => null,
     },
   ];
   useEffect(() => {
@@ -711,8 +697,9 @@ export default () => {
                 actionRender: (row, config, dom) => [
                   dom.delete,
                   <a key="editable" onClick={() => {
+                    modalFormRef?.current?.resetFields();//重置表单
+                    modalFormRef?.current?.setFieldsValue({ ...row });//赋值
                     settuominModal(true);
-                    setModalData(row);
                   }}>
                     脱敏
                   </a>
@@ -725,17 +712,16 @@ export default () => {
       <Modal
         title={"字段脱敏"}
         open={tuominModal}
-        onCancel={() => settuominModal(false)}
+        onCancel={() => { settuominModal(false); modalFormRef?.current?.resetFields(); }}
         footer={[]}
+        forceRender={true}//modal要刷新，否则第一次赋值会失败
       >
         <ProForm
+          formRef={modalFormRef}
           name="tuomin"
-          initialValues={{
-            fieldName: modalData?.fieldName,
-          }}
           onFinish={async (values) => {
             console.log(values)
-            setModalData(false);
+            settuominModal(false);
           }}
           layout={'horizontal'}
           submitter={{

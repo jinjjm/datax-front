@@ -98,7 +98,7 @@ export default () => {
                             }
                             title={<h3><a>{item.sourceName}</a></h3>}
                             description={[
-                                <a>数据库：{item?.dbSchema?.dbName}</a>, 
+                                <a>数据库：{item?.dbSchema?.dbName}</a>,
                                 <div>描述：{item?.sourceDes}</div>
                             ]}
                             extra={
@@ -186,6 +186,7 @@ export default () => {
                 width={500}
                 open={open}
                 onClose={() => setOpen(false)}
+                forceRender={true}
             >
                 <ProForm
                     formRef={modalFormRef}
