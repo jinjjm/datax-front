@@ -63,9 +63,14 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/dataApis': {
-      target: 'http://10.1.40.85:7778/dataApis',
+      target: 'http://10.1.40.85:7778',
       changeOrigin: true,
-      pathRewrite: { '^/dataApis': '' },
+      pathRewrite: { '^': '' },
+    },
+    '/sources': {
+      target: 'http://10.1.40.85:7778',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
     },
   },
 };

@@ -1,25 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Avatar, Button, Card, Divider, Drawer, Input, List, Pagination, Popconfirm, Space, Tag, Tooltip, message } from 'antd';
-import { CloseCircleOutlined, DeleteOutlined, PlusCircleOutlined, PlusOutlined, RedoOutlined } from '@ant-design/icons';
-import Paragraph from 'antd/es/typography/Paragraph';
+import { Avatar, Button, Card, Divider, Drawer, Input, List, Popconfirm, Space, Tag, Tooltip, message } from 'antd';
+import { PlusOutlined, RedoOutlined } from '@ant-design/icons';
 import { CheckCard, PageContainer, ProForm, ProFormDependency, ProFormDigit, ProFormInstance, ProFormSelect, ProFormText } from '@ant-design/pro-components';
-import { MyIcon } from '@/services/utils/icon';
-import { addSources, deleteDataSource, getSourcesPages, testConnectivityApi, testSync } from '@/services/ant-design-pro/datax';
+import { MyIcon, mysqlIcon, oracleIcon, sqlserverIcon } from '@/services/utils/icon';
+import { addSources, deleteDataSource, getSourcesPages, testConnectivityApi, testSync, updateDataSource } from '@/services/ant-design-pro/datax';
+
 
 // 数据源图标索引列表
 let databaseIcon = [
     "",
-    "https://img.sj33.cn/uploads/allimg/201402/7-14022H14522550.png",//1-mysql
+    mysqlIcon,//1-mysql
     "",
-    "https://tse3-mm.cn.bing.net/th/id/OIP-C.5x0bqIWJZ0Q912i6olkDLwHaEK?pid=ImgDet&rs=1",//3-oracle
-    "https://tse3-mm.cn.bing.net/th/id/OIP-C.5x0bqIWJZ0Q912i6olkDLwHaEK?pid=ImgDet&rs=1",//4-oracle
+    oracleIcon,//3-oracle
+    oracleIcon,//4-oracle
     "",
-    "https://img.sj33.cn/uploads/202010/7-20102414431b21.jpg",// 6-SQLServer2008及以下数据库   
-    "https://img.sj33.cn/uploads/202010/7-20102414431b21.jpg",//7-SQLServer2012+数据库 
+    sqlserverIcon,// 6-SQLServer2008及以下数据库   
+    sqlserverIcon,//7-SQLServer2012+数据库 
 ];
 // xs, sm, md, lg, xl,
 const width_form_item = 'xl';
 
+/**
+ * 待做：1、分页查询，查询功能
+ */
 export default () => {
     const [open, setOpen] = useState(false); // 左侧抽屉表单打开控制
     const modalFormRef = useRef<ProFormInstance<any>>(); // 表单属性
@@ -84,7 +87,6 @@ export default () => {
                         ]}
                     >
                         <CheckCard
-                            style={{ width: '112%', marginLeft: '-6%', marginTop: '-7%', height: '53%', marginBottom: '-10%' }}
                             key={item.id}
                             bordered={false} //取消边框
                             checked={false} //不会被选中
@@ -95,11 +97,14 @@ export default () => {
                                 />
                             }
                             title={<h3><a>{item.sourceName}</a></h3>}
-                            description={[<a>用户名：{item?.dbSchema?.dbName}</a>, <div>描述：{item?.sourceDes}</div>]}
+                            description={[
+                                // <a>数据库：{item?.dbSchema?.dbName}</a>, 
+                                <div>描述：{item?.sourceDes}</div>
+                            ]}
                             extra={
                                 <Space>
-                                    {item?.isCon === '1' ? <Tooltip placement="top" title="连通性状态检查通过"><MyIcon type='icon-tongguo' /></Tooltip>
-                                        : <Tooltip placement="top" title="连通性状态未检查"><MyIcon type='icon-group43' /></Tooltip>}
+                                    {item?.isCon === '1' ? <Tooltip placement="top" title="连通性状态检查通过"><MyIcon type='icon-tongguo' style={{ fontSize: '160%' }} /></Tooltip>
+                                        : <Tooltip placement="top" title="连通性状态未检查"><MyIcon type='icon-group43' style={{ fontSize: '130%' }} /></Tooltip>}
                                     {/* <Popconfirm title="请再次确认删除" onConfirm={() => deleteData(item?.id)}>
                                         <Tooltip placement="top" title="删除">
                                             <CloseCircleOutlined />
@@ -107,6 +112,7 @@ export default () => {
                                     </Popconfirm> */}
                                 </Space>
                             }
+                            style={{ width: '112%', marginLeft: '-6%', marginTop: '-7%', height: '53%', marginBottom: '-8%' }}
                         />
                         <Divider />
                         <h3 style={{ marginTop: '-3%' }}><a>● 数据表</a></h3>
@@ -123,7 +129,7 @@ export default () => {
         }
         return (
             <List.Item id='new'>
-                <Button type="dashed" style={{ width: "100%", height: "373px" }}
+                <Button type="dashed" style={{ width: "100%", height: "365px" }}
                     onClick={() => {
                         modalFormRef?.current?.resetFields();
                         setDrawerTitle("新建数据源");
@@ -158,7 +164,7 @@ export default () => {
             header={{ ghost: false, }}
             content={<Space>
                 <Input.Search size={"middle"} placeholder="数据源查询" enterButton />
-                <Button key={"new"} type='primary' icon={<PlusOutlined />}>新建</Button>
+                {/* <Button key={"new"} type='primary' icon={<PlusOutlined />}>新建</Button> */}
                 <Button key={"flash"} type='link' icon={<RedoOutlined />}
                     onClick={() => getSourcesPages({ pageSize, pageNum })
                         .then((res) => {
@@ -185,18 +191,36 @@ export default () => {
                     formRef={modalFormRef}
                     name="createNewDataSource"
                     onFinish={async (values) => {
-                        addSources({ ...values, isCon: isCon }).then((res) => {
-                            if (res?.data === true) {
-                                message.success("添加成功");
-                                setOpen(false);
-                                // 新增--编辑 后重新分页请求数据源卡片
-                                getSourcesPages({ pageSize, pageNum }).then((res) => {
-                                    setCardData([{}, ...res?.data]);
-                                })
-                            } else {
-                                message.error("添加失败");
-                            }
-                        });
+                        // 带有id则为修改接口，不带则为添加接口
+                        // { ...values, isCon: isCon } 联通性标志位是单独测试的，需要单独处理赋值
+                        if (values?.id) {
+                            updateDataSource({ id: values?.id, params: values }).then((res) => {
+                                if (res?.data === true) {
+                                    message.success("更新成功");
+                                    setOpen(false);
+                                    // 新增--编辑 后重新分页请求数据源卡片
+                                    getSourcesPages({ pageSize, pageNum }).then((res) => {
+                                        setCardData([{}, ...res?.data]);
+                                    })
+                                } else {
+                                    message.error("更新失败");
+                                }
+                            });
+                        } else {
+                            addSources({ ...values, isCon: isCon }).then((res) => {
+                                if (res?.data === true) {
+                                    message.success("添加成功");
+                                    setOpen(false);
+                                    // 新增--编辑 后重新分页请求数据源卡片
+                                    getSourcesPages({ pageSize, pageNum }).then((res) => {
+                                        setCardData([{}, ...res?.data]);
+                                    })
+                                } else {
+                                    message.error("添加失败");
+                                }
+                            });
+                        }
+
                     }}
                     layout="vertical"
                     submitter={{
@@ -215,6 +239,7 @@ export default () => {
 
                 >
                     <ProFormText name={"isCon"} hidden />
+                    <ProFormText name={"id"} hidden />
                     <ProFormSelect
                         name={"dbType"}
                         label="数据源类型"
@@ -293,7 +318,7 @@ export default () => {
 
                 </ProForm>
             </Drawer>
-        </PageContainer>
+        </PageContainer >
 
     );
 }

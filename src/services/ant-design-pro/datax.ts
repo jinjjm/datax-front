@@ -146,11 +146,16 @@ export async function getSourcesPages(params: any) {
     },
   }).then((res: any) => res.data).catch((error: any) => console.log(error))
 }
-// /sources/batch/{ids}
-
-/** 删除API接口 */
+/** 删除数据源卡片接口 */
 export async function deleteDataSource(ids: any) {
   return request(`/sources/batch/${ids}`, {
     method: 'DELETE',
+  }).catch((error: any) => console.log(error));
+}
+/** 更新数据源开篇接口 */
+export async function updateDataSource({ id = "", params = {} }) {
+  return request(`/sources/${id}`, {
+    method: 'PUT',
+    data: params,
   }).catch((error: any) => console.log(error));
 }
