@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Avatar, Button, Card, Divider, Drawer, Input, List, Popconfirm, Space, Tag, Tooltip, message } from 'antd';
+import { Avatar, Button, Card, Divider, Drawer, Image, Input, List, Popconfirm, Space, Tag, Tooltip, message } from 'antd';
 import { PlusOutlined, RedoOutlined } from '@ant-design/icons';
 import { CheckCard, PageContainer, ProForm, ProFormDependency, ProFormDigit, ProFormInstance, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { MyIcon, mysqlIcon, oracleIcon, sqlserverIcon } from '@/services/utils/icon';
@@ -95,6 +95,7 @@ export default () => {
                                     size={100}
                                     src={databaseIcon[item?.dbType]}
                                 />
+                                // <Image src={databaseIcon[item?.dbType]} width={120} height={80} preview={false} />
                             }
                             title={<h3><a>{item.sourceName}</a></h3>}
                             description={[

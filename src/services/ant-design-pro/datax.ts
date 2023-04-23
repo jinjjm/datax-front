@@ -85,34 +85,39 @@ export async function downloadApiDoc(id: any) {
       console.log(error);
     });
 }
+/** 获取api树输出结构 */
+export async function getApiTrees1() {
+  return request("/dataApis/trees/1", {
+    method: 'GET',
+  }).then((res: { data: any; }) => res.data).catch((error: any) => console.log(error));
+}
+/** 获取api树输入结构 */
+export async function getApiTrees2() {
+  return request("/dataApis/trees/2", {
+    method: 'GET',
+  }).then((res: { data: any; }) => res.data).catch((error: any) => console.log(error));
+}
 /** 修改api树的title */
-export async function updateTreeTitle(id: any, title: any) {
-  return request('/dataApis/updateTreeTitle', {
-    method: "POST",
-    data: {
-      id: id,
-      title: title,
-    }
-  }).catch((error: any) => console.log(error))
+export async function updateTreeTitle(params: any) {
+  return request('/dataApis/updatetree', {
+    method: "PUT",
+    data: params
+  }).then((res) => res.data).catch((error: any) => console.log(error))
 
 }
 /** 添加api树的title */
-export async function addTreeTitle(id: any, title: any, pos: string) {
-  return request('/dataApis/addTreeTitle', {
+export async function addTreeTitle(params: any) {
+  return request('/dataApis/addtree', {
     method: "POST",
-    data: {
-      id: id,
-      pos: pos,
-      title: title,
-    }
-  }).catch((error: any) => console.log(error))
+    data: params
+  }).then((res) => res.data).catch((error: any) => console.log(error))
 
 }
 /** 删除api树的结构title */
 export async function deleteTreeTitle(id: any) {
-  return request('/dataApis/deleteTreeTitle', {
-    method: "POST",
-  }).catch((error: any) => console.log(error))
+  return request(`/dataApis/deletetree/${id}`, {
+    method: "DELETE",
+  }).then((res) => res.data).catch((error: any) => console.log(error))
 
 }
 /** 测试连通性 */
