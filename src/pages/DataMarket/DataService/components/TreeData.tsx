@@ -191,7 +191,7 @@ const App: React.FC = () => {
   useEffect(() => {
     getApiTrees1().then((res) => {
       // console.log(handleTreeData(res))
-      setTreeData(handleTreeData(res));
+      setTreeData(handleTreeData(res, true));
     })
   }, [])
 

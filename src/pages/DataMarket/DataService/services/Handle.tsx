@@ -94,10 +94,13 @@ export const handleAPIDetials = (response: any) => {
     }
 }
 /**
+ * 
  * 处理api树数据，变为树形组件可以使用的结构
- * @param treedata api树 数据
+ * @param data api树 数据
+ * @param checkLeaf 叶子节点是否可以选中
+ * @returns 
  */
-export const handleTreeData = (data: []) => {
+export const handleTreeData = (data: [], checkLeaf: Boolean) => {
     //递归处理函数
     const handleDiGui = function (child: any) {
         let { apis, childrenMenu } = child;
@@ -113,6 +116,7 @@ export const handleTreeData = (data: []) => {
                 menuName: api.apiName,
                 isLeaf: true,
                 parentId: child.id,
+                disabled: !checkLeaf,
             });
         }
         return {
@@ -124,6 +128,7 @@ export const handleTreeData = (data: []) => {
     let treedata = data.map((leaf: any) => {
         return handleDiGui(leaf);
     });
+    console.log(treedata)
     return treedata;
 }
 /**

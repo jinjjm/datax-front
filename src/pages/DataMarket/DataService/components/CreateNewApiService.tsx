@@ -11,16 +11,17 @@ import {
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
+  ProFormTreeSelect,
   StepsForm,
 } from '@ant-design/pro-components';
 import { history as hhhistory } from '@umijs/max';
 import { Button, Checkbox, Col, message, Modal, Row, Space, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
-import { addDataApis, downloadApiDoc, getApiDetails, getDatabaseTableName, getDatasourceList, getTableColumn, updateDataApis } from '@/services/ant-design-pro/datax';
+import { addDataApis, downloadApiDoc, getApiDetails, getApiTrees1, getDatabaseTableName, getDatasourceList, getTableColumn, updateDataApis } from '@/services/ant-design-pro/datax';
 import { MyIcon } from '@/services/utils/icon';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { handleAPIDetials, handleTransforString } from '../services/Handle';
+import { handleAPIDetials, handleTransforString, handleTreeData } from '../services/Handle';
 import { nanoid } from 'nanoid';
 
 const waitTime = (time: number = 100) => {
@@ -367,6 +368,10 @@ export default () => {
       });
   }, [localStorage.getItem('api_id'), history.state]);
 
+  const onSelect = (keys: React.Key[], info: any) => {
+    console.log('keys ', keys);
+    console.log('info: ', info);
+  };
   return (
     <ProCard
       title={'数据API详情'}
@@ -376,7 +381,10 @@ export default () => {
           <Button
             type="primary"
             icon={<MyIcon type="icon-jiekourizhi" />}
-            onClick={() => downloadApiDoc(localStorage.getItem('api_id'))}
+            onClick={() => {
+              let api_id = localStorage.getItem('api_id');
+              api_id === 'new' ? message.warning("请提交后获取接口文档。") : downloadApiDoc(localStorage.getItem('api_id'));
+            }}
           >
             接口文档
           </Button>
@@ -465,10 +473,27 @@ export default () => {
           />
           <ProFormText name={['shuxing', 'id']} hidden />
           <ProFormTextArea name={['shuxing', 'apiDesc']} label="API描述" width={width_form_item} />
-          <ProFormText
+          <ProFormTreeSelect
             name={['shuxing', 'apiGroup']}
+            placeholder="选择API分组"
             label="API分组"
-            rules={[{ required: request_item }]} />
+            allowClear
+            width={width_form_item}
+            request={async () => await getApiTrees1().then((res) => handleTreeData(res, false))}
+            fieldProps={{
+              filterTreeNode: true,
+              showSearch: true,
+              autoClearSearchValue: true,
+              treeNodeFilterProp: 'menuName',
+              fieldNames: {
+                label: "menuName",
+                value: "id",
+                children: "childrenMenu",
+              },
+              onSelect: onSelect,
+            }}
+            rules={[{ required: request_item }]}
+          />
           <ProFormText
             name={['shuxing', 'apiVersion']}
             label="API版本"
