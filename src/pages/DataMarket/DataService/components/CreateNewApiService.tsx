@@ -46,8 +46,8 @@ const item_readonly = true;
  * 解决--3、删除操作有问题
  * 4、请求拦截器的使用requestInterceptors
  * 解决--5 在默认可编辑状态下无法自动保存
- * 6、步骤二和步骤三的联动性，根据步骤二所选的请求、返回参数来确认步骤三的表格问题
- * 7、最后的表单提交接口未完成
+ * 解决6、步骤二和步骤三的联动性，根据步骤二所选的请求、返回参数来确认步骤三的表格问题
+ * 完成7、最后的表单提交接口未完成
  */
 export default () => {
   const formRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
@@ -67,6 +67,7 @@ export default () => {
   const [tableData_req, setTableData_req] = useState<any>([]);
   const [tableData_res, setTableData_res] = useState([]);
   const [tuominModal, settuominModal] = useState(false);
+  const [tableNameData, setTableNameData] = useState([]);// 保存数据库表结果接口
 
   let readonlyfrom = localStorage.getItem('api_edit_status') === 'false' ? true : false;
 
@@ -738,13 +739,14 @@ export default () => {
             request={async () => await getDatasourceList()}
             rules={[{ required: request_item }]}
             fieldProps={{
-              onChange: (e, option) => {
+              onChange: async (e, option) => {
                 step2FormRef.current?.setFieldsValue({
                   zhixing: {
                     tableName: null,
                     fieldParams: [],
                   }
-                })
+                });
+                setTableNameData(await getDatabaseTableName(e));
               },
             }}
           />
@@ -760,9 +762,10 @@ export default () => {
                       label="数据库表"
                       width={width_form_item}
                       dependencies={['zhixing', 'sourceId']}
-                      request={async (params) => {
-                        if (params.zhixing.sourceId) return await getDatabaseTableName(params.zhixing.sourceId);
-                      }}
+                      // request={async (params) => {
+                      //   if (params.zhixing.sourceId) return await getDatabaseTableName(params.zhixing.sourceId);
+                      // }}
+                      request={async () => tableNameData}
                       rules={[{ required: request_item }]}
                       fieldProps={{
                         onChange: async (e, option: any) => {
