@@ -1,4 +1,4 @@
-import { copyApiInfo, deleteApiInfo, getApiList } from '@/services/ant-design-pro/datax';
+import { copyApiInfo, deleteApiInfo, getApiList, releaseApi } from '@/services/ant-design-pro/datax';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
@@ -11,14 +11,14 @@ export default () => {
   // const historyRef = React.createRef<any>();
 
   const handlerOption = (key: any, record: any, action: any) => {
-    console.log(key);
+    // console.log(key);
     switch (key) {
       case 'copy':
-        message.info('copy');
+        message.success('copy');
         copyApiInfo(record?.id).then(() => action?.reload());
         break;
       case 'delete':
-        message.info('delete');
+        message.success('delete');
         // cnoso
         deleteApiInfo(record?.id).then(() => action?.reload());
         break;
@@ -34,6 +34,10 @@ export default () => {
         break;
       case 'test':
         message.info('测试功能暂未开放');
+        break;
+      case 'release':
+        releaseApi(record?.id).then(() => action?.reload());
+        message.success('发布完成');
         break;
     }
   };
@@ -114,6 +118,7 @@ export default () => {
             { key: 'edit', name: '编辑' },
             { key: 'read', name: '查看' },
             { key: 'copy', name: '拷贝' },
+            { key: 'release', name: '发布' },
             { key: 'delete', name: '删除' },
           ]}
         >

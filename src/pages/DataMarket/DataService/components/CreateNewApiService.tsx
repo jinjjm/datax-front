@@ -17,10 +17,10 @@ import { history as hhhistory } from '@umijs/max';
 import { Button, Checkbox, Col, message, Modal, Row, Space, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
-import { downloadApiDoc, getApiDetails } from '@/services/ant-design-pro/datax';
+import { addDataApis, downloadApiDoc, getApiDetails, getDatabaseTableName, getDatasourceList, getTableColumn, updateDataApis } from '@/services/ant-design-pro/datax';
 import { MyIcon } from '@/services/utils/icon';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { handleAPIDetials } from '../services/Handle';
+import { handleAPIDetials, handleTransforString } from '../services/Handle';
 import { nanoid } from 'nanoid';
 
 const waitTime = (time: number = 100) => {
@@ -51,6 +51,9 @@ const item_readonly = true;
 export default () => {
   const formRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
   const modalFormRef = useRef<ProFormInstance<any>>();
+  // 不能只用一个formRef
+  const step2FormRef = useRef<ProFormInstance<any>>();
+  const step3FormRef = useRef<ProFormInstance<any>>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
   const [editableKeys_req, setEditableRowKeys_req] = useState<React.Key[]>([]);
   const [editableKeys_res, setEditableRowKeys_res] = useState<React.Key[]>([]);
@@ -66,6 +69,7 @@ export default () => {
 
   let readonlyfrom = localStorage.getItem('api_edit_status') === 'false' ? true : false;
 
+  // col_id 可编辑表格的key，唯一标识，必须要有
   const columns: ProColumns<API.APIZiDuanTableType>[] = [
     {
       title: '序号',
@@ -73,15 +77,21 @@ export default () => {
       valueType: 'indexBorder',
       align: 'center',
       readonly: true,
-    },
-    {
-      key: 'col_id',
-      hideInTable: true,
+      key: 'sa',
+      width: '5%',
     },
     {
       title: '列名',
       key: 'columnName',
       dataIndex: 'columnName',
+      align: 'center',
+      readonly: item_readonly,
+      width: '10%',
+    },
+    {
+      title: '注释',
+      key: 'columnComment',
+      dataIndex: 'columnComment',
       align: 'center',
       readonly: item_readonly,
     },
@@ -145,13 +155,6 @@ export default () => {
       readonly: item_readonly,
     },
     {
-      title: '列注释',
-      key: 'columnComment',
-      dataIndex: 'columnComment',
-      align: 'center',
-      readonly: item_readonly,
-    },
-    {
       title: '是否作为请求参数',
       key: 'reqable',
       dataIndex: 'reqable',
@@ -181,25 +184,15 @@ export default () => {
       valueType: 'indexBorder',
       align: 'center',
       readonly: true,
-      key: 'sha?'
+      key: 'sha?',
+      width: '5%',
     },
     {
       title: '参数名称',
       key: 'paramName',
       dataIndex: 'paramName',
       align: 'center',
-    },
-    {
-      title: '是否允许为空',
-      key: 'nullable',
-      dataIndex: 'nullable',
-      align: 'center',
-      // readonly: item_readonly,
-      valueType: 'checkbox',
-      valueEnum: {
-        0: false,
-        1: true,
-      },
+      width: '15%',
     },
     {
       title: '描述',
@@ -261,6 +254,18 @@ export default () => {
       //readonly: item_readonly_params,
     },
     {
+      title: '是否允许为空',
+      key: 'nullable',
+      dataIndex: 'nullable',
+      align: 'center',
+      // readonly: item_readonly,
+      valueType: 'checkbox',
+      valueEnum: {
+        0: false,
+        1: true,
+      },
+    },
+    {
       title: '操作',
       valueType: 'option',
       align: 'center',
@@ -289,7 +294,8 @@ export default () => {
       valueType: 'indexBorder',
       align: 'center',
       readonly: true,
-      key: 'sha??'
+      key: 'sha??',
+      width: '5%',
     },
     {
       key: 'col_id',
@@ -390,18 +396,41 @@ export default () => {
       <StepsForm
         formMapRef={formRef}
         onFinish={async (values) => {
-          console.log(values);
+          const { shuxing, zhixing, canshu } = values;
+          // 传参 
+          let params = {
+            apiDesc: null,
+            allow: null,
+            deny: null,
+            ...shuxing,
+            executeConfig: {
+              sqlText: null,
+              tableId: null,
+              ...zhixing,
+              fieldParams: handleTransforString(zhixing?.fieldParams, "fieldParams") || [],
+            },
+            reqParams: handleTransforString(canshu?.reqParams, "reqParams") || [],
+            resParams: canshu?.resParams || [],
+          };
+          console.log("params: ", params);
+          if (params?.id) {
+            // 修改
+            updateDataApis(params).then((res: any) => {
+              if (res.code === 200) {
+                message.success("更新成功");
+                history.back();
+              } else message.error("更新失败");
+            })
+          } else {
+            // 新建
+            addDataApis(params).then((res: any) => {
+              if (res.code === 200) {
+                message.success("新建成功");
+                history.back();
+              } else message.error("新建失败");
+            })
+          }
           await waitTime(1000);
-          message.success('提交成功');
-          const { shuxing } = values;
-          console.log('传参格式：', {
-            ...values,
-            shuxing: {
-              allow: null,
-              deny: null,
-              ...shuxing,
-            }
-          })
         }}
         formProps={{
           validateMessages: {
@@ -434,6 +463,12 @@ export default () => {
             placeholder="请输入名称"
             rules={[{ required: request_item }]}
           />
+          <ProFormText name={['shuxing', 'id']} hidden />
+          <ProFormTextArea name={['shuxing', 'apiDesc']} label="API描述" width={width_form_item} />
+          <ProFormText
+            name={['shuxing', 'apiGroup']}
+            label="API分组"
+            rules={[{ required: request_item }]} />
           <ProFormText
             name={['shuxing', 'apiVersion']}
             label="API版本"
@@ -567,21 +602,93 @@ export default () => {
               },
             ]}
           />
-          <ProFormTextArea name={['shuxing', 'remark']} label="备注" width={width_form_item} />
         </StepsForm.StepForm>
         <StepsForm.StepForm
+          formRef={step2FormRef}
           readonly={readonlyfrom}
           name="zhixing"
           title="执行配置"
           layout={readonlyfrom ? 'horizontal' : 'vertical'}
           onFinish={async (values: any) => {
             console.log(values)
+            let reqTb: any[] = [];
+            let resTb: any[] = [];
+            // 如果是新建或是修改了请求返回列名，需要根据表单二的内容对表单三进行赋值
+            if (localStorage.getItem('api_id') === 'new') {
+              (values?.zhixing?.fieldParams || []).map((e: any) => {
+                // 作为请求参数
+                e.reqable.length === 0 ? null
+                  : reqTb.push({
+                    paramName: e.columnName,
+                    nullable: e.columnNullable,
+                    paramComment: e.columnComment,
+                    paramType: "1",
+                    col_id: nanoid(),
+                  });
+                // 作为返回参数
+                e.resable.length === 0 ? null
+                  : resTb.push({
+                    fieldName: e.columnName,
+                    fieldComment: e.columnComment,
+                    col_id: nanoid(),
+                  });
+              })
+            } else {
+              // 修改了请求返回列名
+              let canshu = formRef?.current[2].current?.getFieldsValue().canshu;
+              // 不是新建，需要筛选哪些是新家，哪些是新排除掉的字段
+              (values?.zhixing?.fieldParams || []).map((e: any) => {
+                // 作为请求参数
+                if (e.reqable.length === 1) {
+                  let temp: any = canshu?.reqParams?.filter((e1: any) => e1.paramName === e.columnName)
+                  // temp是数组类型
+                  if (temp.length) {
+                    temp[0].nullable = temp.nullable === "1" ? ['1'] : [];
+                    reqTb.push(temp[0]);
+                  } else {
+                    reqTb.push({
+                      paramName: e.columnName,
+                      nullable: e.columnNullable,
+                      paramComment: e.columnComment,
+                      // paramType: "1",
+                      col_id: nanoid(),
+                    })
+                  }
+                }
+                // 作为返回参数
+                if (e.resable.length === 1) {
+                  let temp = canshu?.resParams?.filter((e1: any) => e1.fieldName === e.columnName)
+                  if (temp.length) {
+                    resTb.push(temp[0]);
+                  } else {
+                    resTb.push({
+                      fieldName: e.columnName,
+                      fieldComment: e.columnComment,
+                      col_id: nanoid(),
+                    })
+                  }
+                }
+              })
+            }
+            // 加到step3中
+            step3FormRef.current?.setFieldsValue({
+              canshu: {
+                reqParams: reqTb,
+                resParams: resTb,
+              }
+            })
+            // 打开可编辑的所有行
+            setEditableRowKeys_res(() => (resTb || [])
+              .map((item: { col_id: any; }) => item.col_id));
+            setEditableRowKeys_req(() => (reqTb || [])
+              .map((item: { col_id: any; }) => item.col_id));
             await waitTime(500);
             return true;
           }}
           initialValues={{
             // fieldParams: formRef.current?.getFieldsValue().执行配置?.aa,
-            fieldParams: tableData,
+            // fieldParams: tableData,
+            zhixing: { configType: "1" },
           }}
         >
           <ProFormSelect
@@ -596,34 +703,62 @@ export default () => {
           // 根据选项下面展示不同内容
           />
           <ProFormSelect
-            name={['zhixing', 'tableName']}
+            name={['zhixing', 'sourceId']}
             label="数据源"
             width={width_form_item}
-            valueEnum={{
-              robot_symptom_part: 'robot数据库',
-              mysql_symptom_part: 'mysql数据库',
-            }}
+            // valueEnum={{
+            //   robot_symptom_part: 'robot数据库',
+            //   mysql_symptom_part: 'mysql数据库',
+            // }}
+            request={async () => await getDatasourceList()}
             rules={[{ required: request_item }]}
+            fieldProps={{
+              onChange: (e, option) => {
+                step2FormRef.current?.setFieldsValue({
+                  zhixing: {
+                    tableName: null,
+                    fieldParams: [],
+                  }
+                })
+              },
+            }}
           />
           <ProFormDependency name={['zhixing', 'configType']}>
             {({ zhixing }) => {
-              if (zhixing?.configType === '1') {
+              if (zhixing?.configType === '2') {
+                return <ProFormTextArea label="填写SQL脚本" name={['zhixing', 'sqlText']} />;
+              } else {
                 return (
                   <>
                     <ProFormSelect
                       name={['zhixing', 'tableName']}
                       label="数据库表"
                       width={width_form_item}
-                      valueEnum={{
-                        患者表: '患者表',
-                        部位表: '部位表',
-                        症状表: '症状表',
+                      dependencies={['zhixing', 'sourceId']}
+                      request={async (params) => {
+                        if (params.zhixing.sourceId) return await getDatabaseTableName(params.zhixing.sourceId);
                       }}
                       rules={[{ required: request_item }]}
+                      fieldProps={{
+                        onChange: async (e, option: any) => {
+                          let data = step2FormRef.current?.getFieldsValue();
+                          let table = await getTableColumn({ id: data.zhixing.sourceId, tableName: e });
+                          // 改变时赋值数据表名
+                          step2FormRef.current?.setFieldsValue({
+                            zhixing: {
+                              tableName: option?.label,
+                              fieldParams: table,
+                            }
+                          });
+                          // 打开可编辑
+                          setEditableRowKeys(() => (table || [])
+                            .map((item: { col_id: any; }) => item.col_id));
+                        }
+                      }}
                     />
                     <EditableProTable<API.APIZiDuanTableType>
                       editableFormRef={editableFormRef}
-                      scroll={{ x: 1050 }}
+                      scroll={{ x: 1020 }}
                       rowKey="col_id"
                       headerTitle="字段列表"
                       name={['zhixing', 'fieldParams']}
@@ -639,16 +774,17 @@ export default () => {
                     />
                   </>
                 );
-              } else {
-                return <ProFormTextArea label="填写SQL脚本" name={['zhixing', 'sqlText']} />;
               }
             }}
           </ProFormDependency>
         </StepsForm.StepForm>
-        <StepsForm.StepForm readonly={readonlyfrom} name="canshu" title="参数配置">
+        <StepsForm.StepForm
+          formRef={step3FormRef}
+          readonly={readonlyfrom}
+          name="canshu"
+          title="参数配置">
           <ProCard title="请求参数" headerBordered type="inner">
             <EditableProTable<API.reqParamsColumns>
-              // editableFormRef={editableFormRefreq}
               scroll={{ x: 1000 }}
               rowKey="col_id"
               name={['canshu', 'reqParams']}

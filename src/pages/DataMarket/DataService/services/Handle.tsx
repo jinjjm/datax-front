@@ -19,7 +19,7 @@ const handleAddColumnId = function (tableData: any) {
     return newTableData;
 }
 /**
- * 将数字转为字符串
+ * 将数字转为字符串数组
  * @param tableData 
  * @returns 
  */
@@ -29,11 +29,39 @@ const handleTransforNum = function (tableData: any) {
         const { reqable, resable } = col;
         newTableData.push({
             ...col,
-            reqable: reqable === 1 ? "1" : "0",
-            resable: resable === 1 ? "1" : "0",
+            reqable: reqable === 1 ? ['1'] : [],
+            resable: resable === 1 ? ['1'] : [],
         })
     });
     // console.log(newTableData)
+    return newTableData;
+}
+/**
+ * 将字符串数组转为字符串
+ * @param tableData 
+ * @returns 
+ */
+export const handleTransforString = (tableData: any, name: string) => {
+    let newTableData: any[] = [];
+    if (name === "reqParams") {
+        newTableData = tableData.map((col: any) => {
+            const { nullable } = col;
+            return {
+                ...col,
+                nullable: nullable?.length === 1 ? "1" : "0",
+            }
+        });
+    }
+    if (name === "fieldParams") {
+        newTableData = tableData.map((col: any) => {
+            const { reqable, resable } = col;
+            return {
+                ...col,
+                reqable: reqable?.length === 1 ? "1" : "0",
+                resable: resable?.length === 1 ? "1" : "0",
+            }
+        });
+    }
     return newTableData;
 }
 /**

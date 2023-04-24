@@ -1,4 +1,5 @@
 import { request } from '@umijs/max';
+import { nanoid } from 'nanoid';
 
 /** 分页获取所有API服务列表 /dataApis/page */
 /**ProTable的request请求要求的返回格式必须要求
@@ -163,4 +164,83 @@ export async function updateDataSource({ id = "", params = {} }) {
     method: 'PUT',
     data: params,
   }).catch((error: any) => console.log(error));
+}
+/**
+ * 根据数据源获取数据库的表
+ * @param id 数据源的id号
+ * @returns []
+ */
+export async function getDatabaseTableName(id: string) {
+  return request(`/sources/${id}/tables`, {
+    method: "GET",
+  }).then((res) => {
+    let table = (res.data || []).map((d: { tableName: string; tableComment: any; }) => {
+      return { label: d.tableName, value: d.tableName };
+    });
+    return table;
+  }).catch((error: any) => console.log(error));
+}
+/**
+ * 获取数据源
+ * @returns 
+ */
+export async function getDatasourceList() {
+  return request("/sources/list", {
+    method: "GET",
+  }).then((res) => {
+    let table = (res.data || []).map((d: any) => {
+      return { label: d.sourceName, value: d.id };
+    });
+    return table;
+  }).catch((error: any) => console.log(error));
+}
+/**
+ * 获取数据表的内容
+ * @returns 
+ */
+export async function getTableColumn(params: any) {
+  return await request(`/sources/${params?.id}/${params?.tableName}/columns`, {
+    method: "GET",
+  }).then((res) => {
+    console.log(res.data);
+
+    return handleAddColumnId(res.data);
+  }).catch((error: any) => console.log(error));
+}
+
+const handleAddColumnId = function (tableData: any) {
+  let newTableData: any[] = [];
+  tableData.map((col: any) => {
+    newTableData.push({
+      ...col,
+      columnName: col.colName,
+      col_id: nanoid(),
+      reqable: [], // 默认不勾选
+      resable: ['1'],// 默认勾选
+    })
+  });
+  console.log(newTableData)
+  return newTableData;
+}
+
+/** 添加API */
+export async function addDataApis(data = {}) {
+  return request('/dataApis', {
+    method: "POST",
+    data: data,
+  }).catch((error: any) => console.log(error))
+}
+/** 修改API */
+export async function updateDataApis(data: any) {
+  return request(`/dataApis/${data?.id}`, {
+    method: "PUT",
+    data: data,
+  }).catch((error: any) => console.log(error))
+}
+
+/** 发布API */
+export async function releaseApi(id: any) {
+  return request(`/dataApis/${id}/release`, {
+    method: 'POST',
+  }).catch((error) => console.log(error));
 }

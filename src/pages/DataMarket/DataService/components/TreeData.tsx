@@ -190,7 +190,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     getApiTrees1().then((res) => {
-      console.log(handleTreeData(res))
+      // console.log(handleTreeData(res))
       setTreeData(handleTreeData(res));
     })
   }, [])
@@ -248,7 +248,6 @@ const App: React.FC = () => {
           onFinish={async (values) => {
             console.log(values)
             updateTreeTitle(values).then((res) => {
-              console.log(res)
               res === true ? message.success("修改成功") : message.error("修改失败");
               getApiTrees1().then((res) => setTreeData(handleTreeData(res)));
             });
@@ -277,7 +276,6 @@ const App: React.FC = () => {
               parentId: values?.分组 === "同级结构" ? treeParams?.parentId : treeParams?.id,
               menuType: treeParams?.menuType,
             }).then((res) => {
-              console.log(res)
               res === true ? message.success("添加成功") : message.error("添加失败");
               getApiTrees1().then((res) => setTreeData(handleTreeData(res)));
             });
