@@ -67,7 +67,6 @@ export default () => {
   const [tableData_req, setTableData_req] = useState<any>([]);
   const [tableData_res, setTableData_res] = useState([]);
   const [tuominModal, settuominModal] = useState(false);
-  const [tableNameData, setTableNameData] = useState([]);// 保存数据库表结果接口
 
   let readonlyfrom = localStorage.getItem('api_edit_status') === 'false' ? true : false;
 
@@ -738,6 +737,7 @@ export default () => {
             // }}
             request={async () => await getDatasourceList()}
             rules={[{ required: request_item }]}
+            debounceTime={1}
             fieldProps={{
               onChange: async (e, option) => {
                 step2FormRef.current?.setFieldsValue({
@@ -746,7 +746,6 @@ export default () => {
                     fieldParams: [],
                   }
                 });
-                setTableNameData(await getDatabaseTableName(e));
               },
             }}
           />
@@ -762,10 +761,9 @@ export default () => {
                       label="数据库表"
                       width={width_form_item}
                       dependencies={['zhixing', 'sourceId']}
-                      // request={async (params) => {
-                      //   if (params.zhixing.sourceId) return await getDatabaseTableName(params.zhixing.sourceId);
-                      // }}
-                      request={async () => tableNameData}
+                      request={async (params) => {
+                        if (params.zhixing.sourceId) return await getDatabaseTableName(params.zhixing.sourceId);
+                      }}
                       rules={[{ required: request_item }]}
                       fieldProps={{
                         onChange: async (e, option: any) => {
