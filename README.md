@@ -46,4 +46,7 @@ npm run lint
 ```bash
 npm test
 ```
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=jinjjm/datax-front&type=Date)](https://star-history.com/#jinjjm/datax-front&Date)
 
