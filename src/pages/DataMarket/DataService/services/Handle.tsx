@@ -144,3 +144,17 @@ export const ellipsis = (value: string, len: number) => {
     }
     return value
 }
+/**
+ * 页面标头
+ * @param pageType 新建或id
+ * @param item localStorage.getItem('isEdit')
+ * @param theme 模块标识
+ * @returns
+ */
+export const TitleAdapter = (pageType: any) => {
+    if (pageType == 'new') {
+      return '新建' ;
+    } else  {
+      return '查看详情';
+    }
+  };

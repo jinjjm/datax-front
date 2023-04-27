@@ -24,11 +24,11 @@ export async function getApiList(
     ...(options || {}),
   }).then((res: any) => {
     return {
-      data: res.data.data,
-      total: res.data.total,
-      success: res.success,
-      pageSize: res.data.pageSize,
-      current: res.current,
+      data: res?.data.data,
+      total: res?.data.total,
+      success: res?.success,
+      pageSize: res?.data.pageSize,
+      current: res.pageNum,
     };
   }).catch((error: any) => console.log(error));
   return response;

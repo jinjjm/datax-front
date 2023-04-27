@@ -58,6 +58,16 @@ export default [
         icon: 'icon-Tab_shujujiankong',
         component: './DataMarket/DataMonitoring',
       },
+      {
+        path: '/datamarket/data-integration',
+        name: '服务集成',
+        icon: 'icon-Tab_shujujiankong',
+        component: './DataMarket/DataIntegration',
+      },
+      {
+        path: '/datamarket/data-integration/service-details/*',
+        component: './DataMarket/DataIntegration/components/ServiceDetails',
+      },
     ],
   },
   {

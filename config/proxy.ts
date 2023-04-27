@@ -43,6 +43,11 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/sources': '' },
     },
+    '/services': {
+      target: 'http://10.1.40.85:7778',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
   },
   /**
    * @name 详细的代理配置

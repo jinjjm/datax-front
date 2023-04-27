@@ -1,4 +1,4 @@
-import { addTreeTitle, deleteTreeTitle, getApiTrees1, updateTreeTitle } from '@/services/ant-design-pro/datax';
+import { addTreeTitle, deleteTreeTitle, getApiTrees1, getApiTrees2, updateTreeTitle } from '@/services/ant-design-pro/datax';
 import { MyIcon } from '@/services/utils/icon';
 import { ProForm, ProFormInstance, ProFormRadio, ProFormText } from '@ant-design/pro-components';
 import { message, Modal, Popconfirm, Space, Tooltip, Tree } from 'antd';
@@ -49,7 +49,8 @@ const generateList = (data: DataNode[]) => {
 generateList(defaultData);
 
 
-const App: React.FC = () => {
+
+export default ({ treeType }: { treeType: Number }) => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [autoExpandParent, setAutoExpandParent] = useState(true);
@@ -66,7 +67,7 @@ const App: React.FC = () => {
     menuName: string,//菜单名字
     parentId: string,//父菜单id
     menuType: Number,//1 -输出菜单 2-输入菜单
-  }>({ id: "", menuName: "", parentId: "", menuType: 1 });
+  }>({ id: "", menuName: "", parentId: "", menuType: treeType });
 
 
 
@@ -95,7 +96,7 @@ const App: React.FC = () => {
       id: treeNode.node.key,
       menuName: treeNode.node.menuName,
       parentId: treeNode.node.parentId,
-      menuType: 1,
+      menuType: treeType,
     })
   };
 
@@ -189,10 +190,18 @@ const App: React.FC = () => {
   // }, [searchValue]);
 
   useEffect(() => {
-    getApiTrees1().then((res) => {
-      // console.log(handleTreeData(res))
-      setTreeData(handleTreeData(res, true));
-    })
+    // 区分输出接口和输入接口
+    console.log(treeType)
+    treeType === 1 ?
+      getApiTrees1().then((res) => {
+        // console.log(handleTreeData(res))
+        setTreeData(handleTreeData(res, true));
+      })
+      :
+      getApiTrees2().then((res) => {
+        // console.log(handleTreeData(res))
+        setTreeData(handleTreeData(res, true));
+      })
   }, [])
 
   return (
@@ -212,7 +221,7 @@ const App: React.FC = () => {
           return (
             <span >
               <Tooltip placement="top" title={node?.menuName}>
-                {ellipsis(node?.menuName, 8)}
+                {ellipsis(node?.menuName, 6)}
               </Tooltip>
               {
                 showOptions.show && showOptions?.id === node?.id ?
@@ -311,4 +320,3 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
