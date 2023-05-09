@@ -1,0 +1,9 @@
+.tree-options {
+    Text-align: right;
+    /* color: chartreuse;
+    font-size: 100px; */
+}
+.ant-tabs-nav-container {
+    height:920px;
+    overflow-y:scroll;
+}

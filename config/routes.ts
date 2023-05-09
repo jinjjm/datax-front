@@ -23,9 +23,48 @@ export default [
     ],
   },
   {
-    path: '/datamarket',
+    path: '/data-source',
     name: '数据源',
-    icon: 'icon-shouyedianpujishishangcheng',
+    icon: 'icon-weiwangguanicon-defuben-',
+    routes: [
+      {
+        path: '/data-source',
+        redirect: '/data-source/service-source',
+      },
+      {
+        path: '/data-source/service-source',
+        name: '数据源',
+        icon: 'icon-Tab_shujujiankong',
+        component: './DataMarket/DataSource',
+      },
+    ],
+  },
+  {
+    path: '/data-assets',
+    name: '数据资产',
+    icon: 'icon-weiwangguanicon-defuben-',
+    routes: [
+      {
+        path: '/data-assets',
+        redirect: '/data-assets/directory',
+      },
+      {
+        path: '/data-assets/directory',
+        name: '资产目录',
+        icon: 'icon-bianjiwenjian',
+        component: './DataAssets/Directory',
+      },
+      {
+        path: '/data-assets/assetsDetails',
+        icon: 'icon-bianjiwenjian',
+        component: './DataAssets/Directory/components/AssetsDetails',
+      },
+    ],
+  },
+  {
+    path: '/datamarket',
+    name: '数据服务',
+    icon: 'icon-weiwangguanicon-defuben-',
     access: 'canAdmin',
     routes: [
       {
@@ -47,12 +86,6 @@ export default [
         component: './DataMarket/DataService/components/CreateNewApiService',
       },
       {
-        path: '/datamarket/data-source',
-        name: '服务源',
-        icon: 'icon-Tab_shujujiankong',
-        component: './DataMarket/DataSource',
-      },
-      {
         path: '/datamarket/data-monitoring',
         name: '服务监控',
         icon: 'icon-Tab_shujujiankong',
@@ -69,12 +102,6 @@ export default [
         component: './DataMarket/DataIntegration/components/ServiceDetails',
       },
     ],
-  },
-  {
-    path: '/welcome',
-    name: '数据服务',
-    icon: 'icon-weiwangguanicon-defuben-',
-    component: './Welcome',
   },
   // {
   //   path: '/admin',
@@ -101,7 +128,7 @@ export default [
   // },
   {
     path: '/',
-    redirect: '/datamarket',
+    redirect: '/data-source',
   },
   {
     path: '*',
