@@ -1,13 +1,33 @@
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 
-import { Button, Card, Form, Input, message, Row, Space } from 'antd';
+import { Button, Card, Col, Dropdown, Form, Input, message, Row, Select, Space } from 'antd';
 import ProList from './components/ProList';
 import TreeData from './components/TreeData';
-
+import '../Directory/services/index.css';
+const { Option } = Select
 export default () => {
+  const onGenderChange = () => {
+    console.log(123);
+  }
   return (
-    <PageContainer title="资产目录">
-      <Card bordered>
+    <PageContainer title="资产目录"
+      extra={
+        <Form>
+          <Form.Item name="version" label="切换版本" rules={[{ required: true }]}>
+            <Select
+              onChange={onGenderChange}
+              allowClear
+              defaultValue={2023}
+              style={{ width: 100 }}
+            >
+              <Option value="2023">2023</Option>
+              <Option value="2022">2022</Option>
+              <Option value="2021">2021</Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      }>
+      {/* <Card bordered>
         <Form onFinish={() => message.info('暂不支持查询')}>
           <Row>
             <Space>
@@ -22,20 +42,40 @@ export default () => {
             </Space>
           </Row>
         </Form>
-      </Card>
-      <ProCard bordered>
-        <ProCard tabs={{ type: 'card' }} colSpan="19%">
-          <ProCard.TabPane key="tab1" tab="输出接口">
-            <TreeData treeType={1} />
-          </ProCard.TabPane>
-          <ProCard.TabPane key="tab2" tab="输入接口">
-            <TreeData treeType={2} />
-          </ProCard.TabPane>
-        </ProCard>
-        <ProCard headerBordered>
-          <ProList />
-        </ProCard>
-      </ProCard>
+      </Card> */}
+      <div style={{ padding: 0, background: '#ffffff', width: '100%',borderRadius:10}}>
+        <Row>
+          <Col span={5}>
+            <ProCard>
+              {/* <ProCard.TabPane key="tab1" tab="输出接口">
+                <TreeData treeType={1} />
+              </ProCard.TabPane>
+              <ProCard.TabPane key="tab2" tab="输入接口">
+                <TreeData treeType={2} />
+              </ProCard.TabPane> */}
+              <br></br>
+              <Form>
+                <Form.Item name="version" label="编目方式" rules={[{ required: true }]}>
+                  <Select
+                    onChange={onGenderChange}
+                    allowClear
+                    defaultValue={"资源"}
+                    style={{ width: 110 }}
+                  >
+                    <Option value="资源">资源</Option>
+                    <Option value="部门">部门</Option>
+                    <Option value="主题">主题</Option>
+                  </Select>
+                </Form.Item>
+              </Form>
+              <TreeData treeType={1} />
+            </ProCard>
+          </Col>
+          <Col span={19}>
+            <ProList />
+          </Col>
+        </Row>
+      </div>
     </PageContainer>
   );
 };

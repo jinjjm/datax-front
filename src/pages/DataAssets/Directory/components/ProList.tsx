@@ -1,7 +1,10 @@
 import { ProList } from '@ant-design/pro-components';
 import { history } from '@umijs/max';
-import { Button, Space, Tag } from 'antd';
+import { Button, Descriptions, Space, Tag } from 'antd';
+import fire from "../icon/火焰.svg"
+import listPicture from "../icon/表格.svg"
 import request from 'umi-request';
+import { FireOutlined } from '@ant-design/icons';
 type GithubIssueItem = {
   url: string;
   id: number;
@@ -20,18 +23,19 @@ type GithubIssueItem = {
 
 export default () => (
   <ProList<GithubIssueItem>
-    toolBarRender={() => {
-      return [
-        <Button key="3" type="primary">
-          新建
-        </Button>,
-      ];
-    }}
+    // toolBarRender={() => {
+    //   return [
+    //     <Button key="3" type="primary">
+    //       新建
+    //     </Button>,
+    //   ];
+    // }}
+    // headerTitle="基础列表"
+    itemLayout="vertical"
     search={{
       filterType: 'light',
     }}
     rowKey="name"
-    headerTitle="资产列表"
     request={async (params = {}) =>
       request<{
         data: GithubIssueItem[];
@@ -42,18 +46,39 @@ export default () => (
     pagination={{
       pageSize: 5,
     }}
-    showActions="hover"
+    // showActions="always"
     metas={{
+      avatar: {
+        render: () => {
+          return (
+            <img width={15} src={listPicture} alt="" />
+          )
+        },
+        search: false,
+      },
       title: {
         dataIndex: 'user',
         title: '用户',
-      },
-      avatar: {
-        dataIndex: 'avatar',
         search: false,
       },
       description: {
         dataIndex: 'title',
+        search: false,
+      },
+      content: {
+        render: () => {
+          return (
+            <Descriptions title="">
+              <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
+              <Descriptions.Item label="Telephone">1810000000</Descriptions.Item>
+              <Descriptions.Item label="Live">Hangzhou, Zhejiang</Descriptions.Item>
+              <Descriptions.Item label="Remark">empty</Descriptions.Item>
+              <Descriptions.Item label="Address">
+                No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China
+              </Descriptions.Item>
+            </Descriptions>
+          );
+        },
         search: false,
       },
       subTitle: {
@@ -61,58 +86,51 @@ export default () => (
         render: (_, row) => {
           return (
             <Space size={0}>
-              {row.labels?.map((label: { name: string }) => (
-                <Tag color="blue" key={label.name}>
-                  {label.name}
-                </Tag>
-              ))}
+              <>
+                {row.labels?.map((tag) => {
+                  let color = tag.color === "processing" ? 'geekblue' : 'green';
+                  if (tag.color === 'error') {
+                    color = 'volcano';
+                  }
+                  return (
+                    <>
+                      <img width={15} src={fire} alt="" />
+                      &nbsp;
+                      <>{row.number}</>
+                    </>
+                  );
+                })}
+              </>
             </Space>
           );
         },
         search: false,
       },
-      actions: {
-        render: (text, row) => [
-          <a href={row.url} target="_blank" rel="noopener noreferrer" key="link">
-            链路
-          </a>,
-          <a href={row.url} target="_blank" rel="noopener noreferrer" key="warning">
-            报警
-          </a>,
-          <a
-            href={row.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            key="view"
-            onClick={() => {
-              history.push('/data-assets/assetsDetails');
-            }}
-          >
-            查看
-          </a>,
-        ],
+      extra: {
+        render: (text, row) => (
+          <Space>
+            <a href={row.url} target="_blank" rel="noopener noreferrer" key="link">
+              链路
+            </a>
+            <a href={row.url} target="_blank" rel="noopener noreferrer" key="warning">
+              报警
+            </a>
+            <a
+              href={row.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              key="view"
+              onClick={() => {
+                history.push('/data-assets/assetsDetails');
+              }}
+            >
+              查看
+            </a>
+          </Space>
+        ),
         search: false,
       },
-      status: {
-        // 自己扩展的字段，主要用于筛选，不在列表中显示
-        title: '状态',
-        valueType: 'select',
-        valueEnum: {
-          all: { text: '全部', status: 'Default' },
-          open: {
-            text: '未解决',
-            status: 'Error',
-          },
-          closed: {
-            text: '已解决',
-            status: 'Success',
-          },
-          processing: {
-            text: '解决中',
-            status: 'Processing',
-          },
-        },
-      },
+
     }}
   />
 );

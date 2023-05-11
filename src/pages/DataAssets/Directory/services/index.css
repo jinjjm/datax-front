@@ -4,6 +4,10 @@
     font-size: 100px; */
 }
 .ant-tabs-nav-container {
-    height:920px;
+    height:700px;
     overflow-y:scroll;
+}
+.div.container {
+    border: 2px solid red;
+    border-radius:15px;
 }
