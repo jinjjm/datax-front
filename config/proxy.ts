@@ -44,9 +44,9 @@ export default {
       pathRewrite: { '^/sources': '' },
     },
     '/services': {
-      target: 'http://10.1.40.85:7778',
+      target: 'http://10.1.40.85:7778/services',
       changeOrigin: true,
-      pathRewrite: { '^': '' },
+      pathRewrite: { '^/services': '' },
     },
   },
   /**
@@ -61,6 +61,17 @@ export default {
       pathRewrite: { '^': '' },
     },
   },
+  // 项目打包存放地址：10.1.40.85  /home/webPages/dist
+  // 生产环境中，还需要在nginx中配置代理，否则会出现404问题
+  // location /service {
+  //     proxy_pass http://10.1.40.85:7778/service;
+  // }
+  // 修改后重新启动nginx命令
+  // cd /usr/local/nginx/sbin/
+  // ./nginx -t
+  // ./nginx -s reload
+  // service nginx restart
+
   pro: {
     '/api/': {
       target: 'https://proapi.azurewebsites.net',
@@ -73,9 +84,14 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/sources': {
-      target: 'http://10.1.40.85:7778',
+      target: 'http://10.1.40.85:7778/sources',
       changeOrigin: true,
-      pathRewrite: { '^': '' },
+      pathRewrite: { '^/sources': '' },
+    },
+    '/services': {
+      target: 'http://10.1.40.85:7778/services',
+      changeOrigin: true,
+      pathRewrite: { '^/services': '' },
     },
   },
 };
