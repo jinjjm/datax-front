@@ -344,7 +344,7 @@ export default () => {
     let id = localStorage.getItem('api_id');
     console.log(id);
     // let data;
-    if (id && id !== 'new' && id !== '')
+    if (id && id !== 'new' && id !== '') {
       getApiDetails(id).then((response) => {
         let res = handleAPIDetials(response);
         formRef?.current?.forEach((formInstanceRef: any) => {
@@ -366,6 +366,7 @@ export default () => {
         // setTableData_req(res?.reqParams);
         // setTableData_res(res?.resParams);
       });
+    }
   }, [localStorage.getItem('api_id'), history.state]);
 
   const onSelect = (keys: React.Key[], info: any) => {
@@ -461,9 +462,24 @@ export default () => {
             return true;
           }}
           initialValues={{
-            "shuxing": { "status": "1" },
+            "shuxing": {
+              "status": "1",
+              "apiType": localStorage.getItem('api_id') === 'daoru' ? '1' : '0'
+            },
+
           }}
         >
+          <ProFormSelect
+            name={['shuxing', 'apiType']}
+            label="API类型"
+            width={width_form_item}
+            valueEnum={{
+              0: '系统生成型',
+              1: '第三方接入型',
+            }}
+            disabled
+            rules={[{ required: request_item }]}
+          />
           <ProFormText
             name={['shuxing', 'apiName']}
             label="API名称"

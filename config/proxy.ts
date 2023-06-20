@@ -48,6 +48,11 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/services': '' },
     },
+    '/service': {
+      target: 'http://10.1.40.86:8612/data/service',
+      changeOrigin: true,
+      pathRewrite: { '^/service': '' },
+    },
   },
   /**
    * @name 详细的代理配置

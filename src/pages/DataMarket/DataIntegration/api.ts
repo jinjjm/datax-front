@@ -63,3 +63,11 @@ export async function updateService(data = {}) {
     data: data,
   }).catch((error: any) => console.log(error));
 }
+
+/** 更新服务信息 */
+export async function testUrl(data = {}) {
+  return request('/service/http/testUrl', {
+    method: 'POST',
+    data: data,
+  }).catch((error: any) => console.log(error));
+}

@@ -22,7 +22,7 @@ import { FileSearchOutlined, SaveOutlined } from '@ant-design/icons';
 import { NotificationPlacement } from 'antd/es/notification/interface';
 import { history } from 'umi';
 import { handleTreeData, TitleAdapter } from '../../DataService/services/Handle';
-import { getServiceDetails } from '../api';
+import { getServiceDetails, testUrl } from '../api';
 import '../index.css';
 
 const waitTime = (time: number = 100) => {
@@ -106,6 +106,7 @@ export default () => {
   const [testResType, setTestResType] = useState(false); // false--关闭返回结果展示 true--打开
   const step2FormRef = useRef<ProFormInstance<any>>();
   const step3FormRef = useRef<ProFormInstance<any>>();
+  const [testRes, setTestRes] = useState({}); //''--关闭、'1'--格式化参数表开启、'2'--soap
 
   const [api, contextHolder] = notification.useNotification(); // 分页消息通知
 
@@ -328,8 +329,12 @@ export default () => {
                         <Button
                           type="primary"
                           onClick={() => {
-                            setTestResType(true);
-                            setServiceType('');
+                            console.log(props?.form?.getFieldsValue())
+                            testUrl(props?.form?.getFieldsValue()).then((res) => {
+                              setTestRes(res);
+                              setTestResType(true);
+                              setServiceType('');
+                            })
                           }}
                         >
                           测试
@@ -388,7 +393,7 @@ export default () => {
                   rules={[{ required: request_item }]}
                 />
                 <ProFormText name={'id'} hidden />
-                <ProFormTreeSelect
+                {/* <ProFormTreeSelect
                   label="服务分组"
                   name={'serviceGroup'}
                   allowClear
@@ -410,7 +415,7 @@ export default () => {
                   }}
                   hidden
                   // rules={[{ required: request_item }]}
-                />
+                /> */}
                 <ProFormSelect
                   name={'serviceType'}
                   label="服务类型"
@@ -544,7 +549,7 @@ export default () => {
                                     // ts 字符串转数组
                                     let temp = JSON.parse(
                                       formRef.current?.getFieldValue(['httpService', 'param']) ||
-                                        '{}',
+                                      '{}',
                                     );
                                     let list: { value: string; label: any; type: string }[] = [];
                                     Object.keys(temp).forEach(function (key: string) {
