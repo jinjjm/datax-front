@@ -64,10 +64,31 @@ export async function updateService(data = {}) {
   }).catch((error: any) => console.log(error));
 }
 
-/** 更新服务信息 */
+/** 测试信息 */
 export async function testUrl(data = {}) {
   return request('/service/http/testUrl', {
     method: 'POST',
     data: data,
-  }).catch((error: any) => console.log(error));
+  }).then((res) => res?.data).catch((error: any) => console.log(error));
+}
+/** 同步接口 */
+export async function syncData(data = {}) {
+  return request('/service/http/synData', {
+    method: 'POST',
+    data: data,
+  }).then((res) => res).catch((error: any) => console.log(error));
+}
+/** 一键建表--建表语句 */
+export async function createTableSql(data = {}) {
+  return request('/service/http/createTableSql', {
+    method: 'POST',
+    data: data,
+  }).then((res) => res?.data).catch((error: any) => console.log(error));
+}
+/** 一键建表--执行建表 */
+export async function ddlTableSql(data = {}) {
+  return request('/service/http/ddlTableSql', {
+    method: 'POST',
+    data: data,
+  }).then((res) => res?.code).catch((error: any) => console.log(error));
 }

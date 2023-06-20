@@ -1,5 +1,5 @@
 import { copyApiInfo, deleteApiInfo, getApiList, releaseApi } from '@/services/ant-design-pro/datax';
-import { PlusOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { history } from '@umijs/max';
@@ -160,6 +160,17 @@ export default () => {
           }}
         >
           新建
+        </Button>,
+        <Button
+          key="button"
+          icon={<CloudUploadOutlined />}
+          type="primary"
+          onClick={() => {
+            localStorage.setItem('api_id', 'daoru');
+            history.push('/datamarket/data-service/upload');
+          }}
+        >
+          导入
         </Button>,
       ]}
     />

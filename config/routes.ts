@@ -86,6 +86,10 @@ export default [
         component: './DataMarket/DataService/components/CreateNewApiService',
       },
       {
+        path: '/datamarket/data-service/upload',
+        component: './DataMarket/DataService/components/UpLoadApiService',
+      },
+      {
         path: '/datamarket/data-monitoring',
         name: '服务监控',
         icon: 'icon-Tab_shujujiankong',

@@ -1,4 +1,5 @@
 import {
+  ModalForm,
   PageContainer,
   ProCard,
   ProForm,
@@ -13,16 +14,16 @@ import {
   ProFormTreeSelect,
   StepsForm,
 } from '@ant-design/pro-components';
-import { Breadcrumb, Button, Divider, message, notification, Space, Tag, Tooltip } from 'antd';
+import { Breadcrumb, Button, Divider, message, Modal, notification, Space, Tag, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
-import { getApiTrees2 } from '@/services/ant-design-pro/datax';
+import { getApiTrees2, getDatabaseTableName, getDatasourceList, getTableColumn } from '@/services/ant-design-pro/datax';
 import { MyIcon } from '@/services/utils/icon';
 import { FileSearchOutlined, SaveOutlined } from '@ant-design/icons';
 import { NotificationPlacement } from 'antd/es/notification/interface';
 import { history } from 'umi';
 import { handleTreeData, TitleAdapter } from '../../DataService/services/Handle';
-import { getServiceDetails, testUrl } from '../api';
+import { createTableSql, ddlTableSql, getServiceDetails, syncData, testUrl } from '../api';
 import '../index.css';
 
 const waitTime = (time: number = 100) => {
@@ -42,33 +43,6 @@ const width_form_item = 'lg'; // 大小
 const request_item = true; // 是否必填项
 const key1 = ['success', 'code', 'msg', 'data'];
 const key2 = ['data', 'head', 'code', 'msg'];
-const res = {
-  success: true,
-  code: 200,
-  msg: '操作成功',
-  data: [
-    {
-      data: {
-        id: '1298954518389604354',
-        status: '1',
-      },
-      header: {
-        serviceKey: 'r/628r00siAeYvnHkMEEM9rafPUt6nxV',
-        secretKey: 'bDhHFzcDcmo=',
-      },
-    },
-    {
-      data: {
-        id: '1298954518389604354',
-        status: '1',
-      },
-      header: {
-        serviceKey: 'r/628r00siAeYvnHkMEEM9rafPUt6nxV',
-        secretKey: 'bDhHFzcDcmo=',
-      },
-    },
-  ],
-};
 //颜色分布
 const tagColor = [
   'processing',
@@ -106,7 +80,11 @@ export default () => {
   const [testResType, setTestResType] = useState(false); // false--关闭返回结果展示 true--打开
   const step2FormRef = useRef<ProFormInstance<any>>();
   const step3FormRef = useRef<ProFormInstance<any>>();
-  const [testRes, setTestRes] = useState({}); //''--关闭、'1'--格式化参数表开启、'2'--soap
+  const [testRes, setTestRes] = useState({}); //测试返回数据
+  const [testResColumn, setTestResColumn] = useState([]); //输入字段名
+  const [column, setColumn] = useState([]); //输出字段
+  const [isModalOpen, setIsModalOpen] = useState(false);//一键建表痰喘
+  const formRefModal = useRef<ProFormInstance>(); // 详情表单ref
 
   const [api, contextHolder] = notification.useNotification(); // 分页消息通知
 
@@ -205,11 +183,11 @@ export default () => {
       <div style={{ display: 'flex', flexDirection: 'row', marginBottom: 25 }}>
         <div style={{ flex: 1, textAlign: 'center' }} key={'leftkeys'}>
           <div style={{ fontWeight: 500, fontSize: 18 }}>输入表字段</div>
-          {key1.map((e, i) => (
+          {(step2FormRef.current?.getFieldValue('dataColumn') || []).map((e, i) => (
             <div key={i}>
               <Divider style={{ margin: '8px 0' }} />
               <Tag bordered={false} color={tagColor[i]} style={{ fontSize: 15 }}>
-                {e}
+                {e?.label}
               </Tag>
             </div>
           ))}
@@ -217,11 +195,11 @@ export default () => {
         <Divider type="vertical" style={{ width: '10px', height: '100%' }} />
         <div style={{ flex: 1, textAlign: 'center' }} key={'rightkeys'}>
           <div style={{ fontWeight: 500, fontSize: 18 }}>输出表字段</div>
-          {key2.map((e, i) => (
+          {(step2FormRef.current?.getFieldValue('column') || []).map((e, i) => (
             <div key={i}>
               <Divider style={{ margin: '8px 0' }} />
               <Tag bordered={false} color={tagColor[i]} style={{ fontSize: 15 }}>
-                {e}
+                {e?.label}
               </Tag>
             </div>
           ))}
@@ -294,30 +272,19 @@ export default () => {
               formRef={formRef}
               onFinish={async (values: any) => {
                 console.log(values);
-                // let params = {
-                //     httpService: null,
-                //     webService: null,
-                //     ...values,
-                // }
-                // if (serviceTemp === 'new') {
-                //     addService(params).then((res) => {
-                //         if (res.data?.id) {
-                //             message.success("新建成功");
-                //             waitTime(500);
-                //             history.back();
-                //         } else message.error("新建失败");
-                //     })
-                // } else {
-                //     updateService(params).then((res) => {
-                //         console.log(res)
-                //         if (res.code === 200) {
-                //             message.success("更新成功");
-                //             waitTime(500);
-                //             history.back();
-                //         } else message.error("更新失败");
-                //     })
-                // }
-                message.info('同步去了。。。。');
+                let params = {
+                  ...values,
+                  column: values.column.map((e: { value: any; }) => e.value),
+                  dataColumn: values.dataColumn.map((e: { value: any; }) => e.value),
+                };
+                if (serviceTemp === 'new') {
+                  syncData(params).then((res) => {
+                    console.log(res);
+                    message.info('新建同步完成')
+                  })
+                } else {
+                  message.info('修改同步完成')
+                }
                 await waitTime(500);
                 return true;
               }}
@@ -330,11 +297,25 @@ export default () => {
                           type="primary"
                           onClick={() => {
                             console.log(props?.form?.getFieldsValue())
+
                             testUrl(props?.form?.getFieldsValue()).then((res) => {
-                              setTestRes(res);
+                              setTestRes(JSON.parse(res?.response));
+                              //dataColumn 内容和下拉框赋值
+                              let d = (res?.dataColumn || []).map((e) => {
+                                return {
+                                  value: e,
+                                  label: e
+                                }
+                              });
+                              step2FormRef.current?.setFieldsValue({
+                                dataPath: res?.dataKey,
+                                dataColumn: d,
+                              })
+                              setTestResColumn(d)
                               setTestResType(true);
                               setServiceType('');
-                            })
+                              setNextState(false)
+                            });
                           }}
                         >
                           测试
@@ -349,24 +330,22 @@ export default () => {
                       </Space>
                     );
                   }
-                  if (props.step === 1) {
-                    return [
-                      <Button key="pre" onClick={() => props.onPre?.()}>
-                        返回上一步
-                      </Button>,
-                      <Button type="primary" key="goToTree" onClick={() => props.onSubmit?.()}>
-                        下一步
-                      </Button>,
-                    ];
-                  }
-
                   return [
                     <Button key="gotoTwo" onClick={() => props.onPre?.()}>
                       返回上一步
                     </Button>,
-                    <Button type="primary" key="goToTree" onClick={() => props.onSubmit?.()}>
-                      同步
-                    </Button>,
+                    <ModalForm
+                      title="同步校验字段"
+                      trigger={<Button type="primary">同步</Button>}
+                      onFinish={async () => {
+                        //提交同步
+                        props.onSubmit?.();
+                        await waitTime(500);
+                        return true;
+                      }}
+                    >
+                      {duibi()}
+                    </ModalForm>
                   ];
                 },
               }}
@@ -385,193 +364,174 @@ export default () => {
                 readonly={readonlyfrom}
                 {...formItemLayout}
                 layout={'horizontal'}
+                initialValues={{
+                  url: 'http://10.1.40.85:7778/sources/queryList',
+                  serviceType: '1',
+                  httpMethod: 'POST',
+                  paramType: '2',
+                  fenye: '0',
+                  param: "{\"dataSourceId\": \"1377933635223552\",\"offset\": 0,\"pageNum\": 1,\"pageSize\": 2,\"sql\": \"select * from data_governance.metadata_source\"}"
+                  // {"datasourceId":"1377933635223552 ","offset": 0, "pagelum": 1, "pagesize": 2,"sgl": "select *from data_governance.metadata_source"}
+                }}
               >
                 <ProFormText
                   name={'serviceName'}
                   label="服务名称"
                   width={width_form_item}
-                  rules={[{ required: request_item }]}
                 />
                 <ProFormText name={'id'} hidden />
-                {/* <ProFormTreeSelect
-                  label="服务分组"
-                  name={'serviceGroup'}
-                  allowClear
-                  width={width_form_item}
-                  request={async () =>
-                    await getApiTrees2().then((res) => handleTreeData(res, false))
-                  }
-                  fieldProps={{
-                    filterTreeNode: true,
-                    showSearch: true,
-                    autoClearSearchValue: true,
-                    treeNodeFilterProp: 'menuName',
-                    fieldNames: {
-                      label: 'menuName',
-                      value: 'id',
-                      children: 'childrenMenu',
-                    },
-                    // onSelect: onSelect,
-                  }}
-                  hidden
-                  // rules={[{ required: request_item }]}
-                /> */}
                 <ProFormSelect
                   name={'serviceType'}
                   label="服务类型"
                   width={width_form_item}
-                  valueEnum={{
-                    1: 'http接口',
-                    2: 'webservice接口',
-                  }}
+                  options={[
+                    {
+                      label: 'http接口',
+                      value: '1',
+                    },
+                    {
+                      label: 'webservice接口',
+                      value: '2',
+                    },
+                  ]}
+                  disabled
                   fieldProps={{
                     //e--event
                     onChange: () => setServiceType(''),
                   }}
                   rules={[{ required: request_item }]}
                 />
-                <ProFormDependency name={['serviceType']}>
-                  {({ serviceType }) => {
-                    if (serviceType === '2') {
-                      return (
-                        <>
-                          <ProFormText
-                            name={['webService', 'wsdl']}
-                            label="服务描述WSDL"
-                            width={width_form_item}
-                          />
-                          <ProFormText
-                            name={['webService', 'targetNamespace']}
-                            label="报文头"
-                            width={width_form_item}
-                          />
-                          <ProFormTextArea
-                            name={['webService', 'soap']}
-                            label="SOAP"
-                            width={width_form_item}
-                            fieldProps={{
-                              autoSize: { minRows: 6, maxRows: 6 },
-                            }}
-                            addonAfter={
-                              <Tooltip title="右侧查看" placement="top">
-                                <a
-                                  onClick={() =>
-                                    setServiceType(formRef.current?.getFieldValue('serviceType'))
-                                  }
-                                >
-                                  <FileSearchOutlined />
-                                </a>
-                              </Tooltip>
-                            }
-                          />
-                          <ProFormText
-                            name={['webService', 'method']}
-                            label="请求方式"
-                            width={width_form_item}
-                          />
-                        </>
-                      );
-                    } else {
-                      return (
-                        <>
-                          <ProFormSelect
-                            name={['httpService', 'httpMethod']}
-                            label="服务请求方式"
-                            width={width_form_item}
-                            valueEnum={{
-                              GET: 'GET',
-                              POST: 'POST',
-                              DELETE: 'DELETE',
-                              PUT: 'PUT',
-                            }}
-                            rules={[{ required: request_item }]}
-                          />
-                          <ProFormText
-                            name={['httpService', 'url']}
-                            label="服务请求地址"
-                            width={width_form_item}
-                            rules={[{ required: request_item }]}
-                          />
-                          <ProFormText
-                            name={['httpService', 'header']}
-                            label="服务请求头"
-                            width={width_form_item}
-                            hidden
-                          />
-                          <ProFormRadio.Group
-                            name={['httpService', 'fenye']}
-                            label="是否分页"
-                            width={width_form_item}
-                            options={[
-                              {
-                                label: '否',
-                                value: '0',
-                              },
-                              {
-                                label: '是',
-                                value: '1',
-                              },
-                            ]}
-                            fieldProps={{
-                              onChange: (e) => {
-                                // console.log(e?.target?.value)
-                                let temp = JSON.parse(
-                                  formRef.current?.getFieldValue(['httpService', 'param']) || '{}',
-                                );
+                <ProFormSelect
+                  name={'httpMethod'}
+                  label="服务请求方式"
+                  width={width_form_item}
+                  valueEnum={{
+                    GET: 'GET',
+                    POST: 'POST',
+                    DELETE: 'DELETE',
+                    PUT: 'PUT',
+                  }}
+                  rules={[{ required: request_item }]}
+                />
+                <ProFormText
+                  name={'url'}
+                  label="服务请求地址"
+                  width={width_form_item}
+                  rules={[{ required: request_item }]}
+                />
+                <ProFormText
+                  name={'header'}
+                  label="服务请求头"
+                  width={width_form_item}
+                  hidden
+                />
+                <ProFormSelect
+                  name={'paramType'}
+                  label="参数类型"
+                  width={width_form_item}
+                  options={[
+                    {
+                      label: 'none',
+                      value: '0',
+                    },
+                    {
+                      label: 'form-data',
+                      value: '1',
+                    },
+                    {
+                      label: 'application/json',
+                      value: '2',
+                    },
+                    {
+                      label: 'x-www-form-urlencoded',
+                      value: '3',
+                    },
+                  ]}
+                  rules={[{ required: request_item }]}
+                />
+                <ProFormTextArea
+                  name={'param'}
+                  label="服务请求参数"
+                  width={width_form_item}
+                  addonAfter={
+                    <Tooltip title={'格式化编辑'} placement="top">
+                      <a
+                        onClick={() => {
+                          // ts 字符串转数组
+                          let temp = JSON.parse(
+                            formRef.current?.getFieldValue('param') ||
+                            '{}',
+                          );
+                          let list: { value: string; label: any; type: string }[] = [];
+                          Object.keys(temp).forEach(function (key: string) {
+                            list.push({
+                              label: key,
+                              value: temp[key],
+                              type: typeof temp[key],
+                            });
+                          });
+                          formListRef.current?.resetFields();
+                          formListRef.current?.setFieldsValue({ serviceList: list });
+                          setServiceType(formRef.current?.getFieldValue('serviceType'));
+                          setTestResType(false);
+                        }}
+                      >
+                        <FileSearchOutlined />
+                      </a>
+                    </Tooltip>
+                  }
+                />
+                <ProFormRadio.Group
+                  name={'fenye'}
+                  label="同步结果是否分页"
+                  width={width_form_item}
+                  options={[
+                    {
+                      label: '否',
+                      value: '0',
+                    },
+                    {
+                      label: '是',
+                      value: '1',
+                    },
+                  ]}
+                // fieldProps={{
+                //   onChange: (e) => {
+                //     // console.log(e?.target?.value)
+                //     let temp = JSON.parse(
+                //       formRef.current?.getFieldValue('param') || '{}',
+                //     );
 
-                                if (e?.target?.value === '1') {
-                                  openNotification('topLeft');
-                                  temp = {
-                                    ...temp,
-                                    pageNum: 1, //页码
-                                    pageSize: 5, //每页个数
-                                  };
-                                } else {
-                                  // 删除pagenum和size
-                                  temp.pageNum = undefined;
-                                  temp.pageSize = undefined;
-                                  console.log(temp);
-                                }
-                                formRef.current?.setFieldsValue({
-                                  httpService: { param: JSON.stringify(temp) },
-                                });
-                              },
-                            }}
-                          />
-                          <ProFormTextArea
-                            name={['httpService', 'param']}
-                            label="服务请求参数"
-                            width={width_form_item}
-                            addonAfter={
-                              <Tooltip title={'格式化编辑'} placement="top">
-                                <a
-                                  onClick={() => {
-                                    // ts 字符串转数组
-                                    let temp = JSON.parse(
-                                      formRef.current?.getFieldValue(['httpService', 'param']) ||
-                                      '{}',
-                                    );
-                                    let list: { value: string; label: any; type: string }[] = [];
-                                    Object.keys(temp).forEach(function (key: string) {
-                                      list.push({
-                                        label: key,
-                                        value: temp[key],
-                                        type: typeof temp[key],
-                                      });
-                                    });
-                                    formListRef.current?.resetFields();
-                                    formListRef.current?.setFieldsValue({ serviceList: list });
-                                    setServiceType(formRef.current?.getFieldValue('serviceType'));
-                                    setTestResType(false);
-                                  }}
-                                >
-                                  <FileSearchOutlined />
-                                </a>
-                              </Tooltip>
-                            }
-                          />
-                        </>
-                      );
+                //     if (e?.target?.value === '1') {
+                //       // openNotification('topLeft');//通知
+                //       temp = {
+                //         ...temp,
+                //         pageNum: 1, //页码
+                //         pageSize: 5, //每页个数
+                //       };
+                //     } else {
+                //       // 删除pagenum和size
+                //       temp.pageNum = undefined;
+                //       temp.pageSize = undefined;
+                //       console.log(temp);
+                //     }
+                //     formRef.current?.setFieldsValue({
+                //       param: JSON.stringify(temp),
+                //     });
+                //   },
+                // }}
+                />
+                <ProFormDependency name={['fenye']}>
+                  {({ fenye }) => {
+                    if (fenye === '1') {
+                      return (
+                        <ProFormGroup style={{ marginLeft: '13%' }}>
+                          <ProFormText name={'pageNumName'} initialValue={"pageNum"} label={'页数'} />
+                          <ProFormText name={'pageNum'} />
+                          <ProFormText name={'pageSizeName'} initialValue={"pageSize"} label={'每页条数'} />
+                          <ProFormText name={'pageSize'} />
+                        </ProFormGroup>
+                      )
                     }
                   }}
                 </ProFormDependency>
@@ -600,59 +560,84 @@ export default () => {
                 stepProps={{
                   description: '描述',
                 }}
-                onFinish={async () => {
-                  console.log(formRef.current?.getFieldsValue());
-                  await waitTime(500);
-                  return true;
-                }}
                 {...formItemLayout}
                 layout={'horizontal'}
                 readonly={readonlyfrom}
               >
                 <ProFormText
-                  name={'数据所在路径'}
+                  name={'dataPath'}
                   label="数据所在路径"
                   width={width_form_item}
                   placeholder={'例如: data.data '}
                   rules={[{ required: request_item }]}
                 />
                 <ProFormSelect
-                  name={'输入字段名'}
+                  name={'dataColumn'}
                   label="输入字段名"
                   width={width_form_item}
+                  options={testResColumn}
                   fieldProps={{
                     mode: 'multiple',
                   }}
                   rules={[{ required: request_item }]}
                 />
                 <ProFormSelect
-                  name={'输出表'}
-                  label="输出表"
-                  width={'md'}
+                  name={'sourceId'}
+                  label="输出数据源"
+                  width={width_form_item}
+                  request={async () => await getDatasourceList()}
                   rules={[{ required: request_item }]}
-                  addonAfter={<a onClick={() => message.info('一键建表')}>一键建表</a>}
+                  fieldProps={{
+                    onChange: async (e, option: any) => {
+                      // 改变时赋值数据表名
+                      step2FormRef.current?.setFieldsValue({
+                        tableName: null,
+                        column: [],
+                      });
+                    }
+                  }}
                 />
                 <ProFormSelect
-                  name={'输出字段'}
+                  name={'tableName'}
+                  label="输出表"
+                  width={'md'}
+                  dependencies={['sourceId']}
+                  rules={[{ required: request_item }]}
+                  request={async (params) => {
+                    if (params.sourceId) return await getDatabaseTableName(params.sourceId);
+                  }}
+                  addonAfter={<a onClick={() => {
+                    formRefModal.current?.resetFields();
+                    setIsModalOpen(true)
+                  }}>一键建表</a>}
+                  fieldProps={{
+                    onChange: async (e, option: any) => {
+                      let data = step2FormRef.current?.getFieldsValue();
+                      let table = await getTableColumn({ id: data.sourceId, tableName: e });
+                      // 改变时赋值数据表名
+                      let names = (table || []).map((e) => {
+                        return {
+                          value: e.colName,
+                          label: e.colName,
+                        }
+                      });
+                      setColumn(names)
+                      step2FormRef.current?.setFieldsValue({
+                        column: names,
+                      });
+                    }
+                  }}
+                />
+                <ProFormSelect
+                  name={'column'}
                   label="输出字段"
                   width={width_form_item}
                   fieldProps={{
                     mode: 'multiple',
                   }}
+                  options={column}
                   rules={[{ required: request_item }]}
                 />
-              </StepsForm.StepForm>
-              <StepsForm.StepForm
-                name="step3"
-                title="同步校验"
-                formRef={step3FormRef}
-                stepProps={{
-                  description: '检查参数对应',
-                }}
-                {...formItemLayout}
-                layout={'horizontal'}
-              >
-                {duibi()}
               </StepsForm.StepForm>
             </StepsForm>
           </ProCard>
@@ -669,7 +654,7 @@ export default () => {
           >
             {testResType ? (
               <pre>
-                <code>{JSON.stringify(res, null, 4)}</code>
+                <code>{JSON.stringify(testRes, null, 4)}</code>
               </pre>
             ) : null}
             {serviceType === '' ? null : (
@@ -681,7 +666,7 @@ export default () => {
                   (values?.serviceList || []).forEach((item: any) => {
                     obj[item?.label] = item?.value;
                   });
-                  formRef.current?.setFieldsValue({ httpService: { param: JSON.stringify(obj) } });
+                  formRef.current?.setFieldsValue({ param: JSON.stringify(obj) });
                   return true;
                 }}
                 submitter={false}
@@ -724,6 +709,73 @@ export default () => {
           </ProCard>
         </ProCard>
       </ProCard>
-    </PageContainer>
+      <Modal
+        open={isModalOpen}
+        onOk={() => setIsModalOpen(false)}
+        onCancel={() => setIsModalOpen(false)}
+        width={600}
+        footer={[]}
+      >
+        <ProForm
+          formRef={formRefModal}
+          onFinish={async (values: any) => {
+            ddlTableSql({
+              sql: values?.sql,
+              targetSourceId: values?.targetSourceId
+            }).then(async (res) => {
+              if (res === 200) {
+                await waitTime(500);
+                message.success("建表成功");
+                setIsModalOpen(false);
+              }
+            })
+          }}
+          initialValues={{
+            columnNames: testResColumn,
+          }}>
+          <ProFormSelect
+            name={'columnNames'}
+            label="字段名列表"
+            width={width_form_item}
+            options={testResColumn}
+            fieldProps={{
+              mode: 'multiple',
+            }}
+            rules={[{ required: request_item }]}
+          />
+          <ProFormText
+            name={'tableName'}
+            label="表名"
+            width={width_form_item}
+            placeholder={''}
+            rules={[{ required: request_item }]}
+          />
+          <ProFormTextArea
+            name={'sql'}
+            label="建表语句"
+            width={width_form_item}
+            rules={[{ required: request_item }]}
+            addonAfter={<a onClick={() => {
+              let { columnNames, tableName } = formRefModal.current?.getFieldsValue();
+              createTableSql({
+                columnNames: columnNames?.map((e) => e.value),
+                tableName: tableName
+              }).then((res) => {
+                formRefModal.current?.setFieldsValue({
+                  sql: res,
+                })
+              })
+            }}>获取建表语句</a>}
+          />
+          <ProFormSelect
+            name={'targetSourceId'}
+            label="数据源"
+            width={width_form_item}
+            request={async () => await getDatasourceList()}
+            rules={[{ required: request_item }]}
+          />
+        </ProForm>
+      </Modal>
+    </PageContainer >
   );
 };
