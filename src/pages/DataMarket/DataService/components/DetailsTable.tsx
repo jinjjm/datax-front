@@ -25,7 +25,7 @@ export default () => {
       case 'read':
         localStorage.setItem('api_id', record?.id);
         localStorage.setItem('api_edit_status', 'false');
-        history.push('/datamarket/data-service/api-details/');
+        history.push('/datamarket/data-service/read-api-details/');
         break;
       case 'edit':
         localStorage.setItem('api_id', record?.id);

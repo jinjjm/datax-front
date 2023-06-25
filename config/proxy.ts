@@ -43,11 +43,11 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/sources': '' },
     },
-    '/services': {
-      target: 'http://10.1.40.86:8612/data/service/services',
-      changeOrigin: true,
-      pathRewrite: { '^/services': '' },
-    },
+    // '/services': {
+    //   target: 'http://10.1.40.86:8612/data/service/services',
+    //   changeOrigin: true,
+    //   pathRewrite: { '^/services': '' },
+    // },
     '/service': {
       target: 'http://10.1.40.86:8612/data/service',
       changeOrigin: true,
@@ -93,10 +93,10 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/sources': '' },
     },
-    '/services': {
-      target: 'http://10.1.40.86:8612/services',
+    '/service': {
+      target: 'http://10.1.40.86:8612/service',
       changeOrigin: true,
-      pathRewrite: { '^/services': '' },
+      pathRewrite: { '^/service': '' },
     },
   },
 };

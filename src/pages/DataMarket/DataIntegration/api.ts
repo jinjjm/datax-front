@@ -11,7 +11,7 @@ export async function getServicesList(
 ) {
   let response = await request<{
     data: API.ApiList;
-  }>('/services/page', {
+  }>('/service/services/page', {
     method: 'GET',
     params: {
       pageSize: params.pageSize,
@@ -35,14 +35,14 @@ export async function getServicesList(
 
 /** 删除服务信息接口 */
 export async function deleteServiceInfo(id: any) {
-  return request(`/services/${id}`, {
+  return request(`/service/services/${id}`, {
     method: 'DELETE',
   }).catch((error: any) => console.log(error));
 }
 
 /** 根据id获取服务详细信息 */
 export async function getServiceDetails(id: any) {
-  return request(`/services/detail/${id}`, {
+  return request(`/service/services/detail/${id}`, {
     method: 'GET',
   })
     .then((res) => res)
@@ -51,14 +51,14 @@ export async function getServiceDetails(id: any) {
 
 /** 添加服务信息 */
 export async function addService(data = {}) {
-  return request('/services', {
+  return request('/service/services', {
     method: 'POST',
     data: data,
   }).catch((error: any) => console.log(error));
 }
 /** 更新服务信息 */
 export async function updateService(data = {}) {
-  return request(`/services/${data?.id}`, {
+  return request(`/service/services/${data?.id}`, {
     method: 'PUT',
     data: data,
   }).catch((error: any) => console.log(error));
