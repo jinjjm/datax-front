@@ -1,13 +1,14 @@
 .tree-options {
-    Text-align: right;
-    /* color: chartreuse;
+  text-align: right;
+  /* color: chartreuse;
     font-size: 100px; */
 }
 .ant-tabs-nav-container {
-    height:700px;
-    overflow-y:scroll;
+  /* height:500px; */
+  /* overflow-y:scroll; */
+  height: 100%;
 }
-.div.container {
-    border: 2px solid red;
-    border-radius:15px;
+.divsss {
+  height: 700px;
+  overflow-y: scroll;
 }

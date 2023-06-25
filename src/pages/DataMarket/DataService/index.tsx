@@ -26,12 +26,12 @@ export default () => {
       </Card>
       <ProCard bordered >
         <ProCard tabs={{ type: 'card' }} colSpan="19%" >
-          <ProCard.TabPane key="tab1" tab="输出接口">
+          <ProCard.TabPane key="tab1" tab="接口目录">
             <TreeData treeType={1} />
           </ProCard.TabPane>
-          <ProCard.TabPane key="tab2" tab="输入接口" >
+          {/* <ProCard.TabPane key="tab2" tab="输入接口" >
             <TreeData treeType={2} />
-          </ProCard.TabPane>
+          </ProCard.TabPane> */}
         </ProCard>
         <ProCard headerBordered>
           <DetailsTable />

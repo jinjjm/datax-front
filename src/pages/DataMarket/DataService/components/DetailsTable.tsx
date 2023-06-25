@@ -156,6 +156,7 @@ export default () => {
           type="primary"
           onClick={() => {
             localStorage.setItem('api_id', 'new');
+            localStorage.setItem('api_edit_status', '');
             history.push('/datamarket/data-service/create-new');
           }}
         >
