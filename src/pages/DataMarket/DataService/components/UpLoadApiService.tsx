@@ -163,17 +163,16 @@ export default () => {
                                         url: values?.url,
                                         param: values?.param,
                                         paramType: values?.paramType,
-                                    }
+                                    },
                                 }
                                 // 导入api
                                 addDataApis(params).then((res: any) => {
-                                    if (res.code === 200) {
+                                    if (res?.code === 200) {
                                         message.success("导入成功");
                                         history.back();
-                                    } else message.error("导入成功");
+                                    } else message.error("导入失败");
                                 })
                                 await waitTime(500);
-                                return true;
                             }}
                         >
                             <StepsForm.StepForm
@@ -189,11 +188,12 @@ export default () => {
                                 }}
                                 initialValues={{
                                     apiType: '1',
-                                    allow_or_deny: 'hei',
+                                    // allow_or_deny: 'hei',
                                     rateLimit: {
                                         enable: '0'
                                     },
-                                    status: '1'
+                                    status: '1',
+                                    apiVersion: 'v1.0.0'
                                 }}
                             >
                                 <ProFormSelect
@@ -235,6 +235,12 @@ export default () => {
                                         },
                                         onSelect: onSelect,
                                     }}
+                                    rules={[{ required: request_item }]}
+                                />
+                                <ProFormText
+                                    name={'apiUrl'}
+                                    label="API路径"
+                                    width={width_form_item}
                                     rules={[{ required: request_item }]}
                                 />
                                 <ProFormText
@@ -431,6 +437,11 @@ export default () => {
                                         },
                                     ]}
                                     rules={[{ required: request_item }]}
+                                />
+                                <ProFormTextArea
+                                    name={'header'}
+                                    label="请求头"
+                                    width={width_form_item}
                                 />
                                 <ProFormTextArea
                                     name={'param'}

@@ -244,3 +244,9 @@ export async function releaseApi(id: any) {
     method: 'POST',
   }).catch((error) => console.log(error));
 }
+/** 通过ID获取带有请求头部的详细信息 */
+export async function detailAndHeaderApi(id: any) {
+  return request(`/dataApis/detail/${id}`, {
+    method: 'GET',
+  }).then((res)=>res.data).catch((error) => console.log(error));
+}

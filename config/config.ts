@@ -152,8 +152,8 @@ export default defineConfig({
     strategy: 'normal',
   },
   requestRecord: {},
-  // history: {
-  //   type: 'hash',
-  // },
-  // publicPath: './',
+  history: {
+    type: 'hash',
+  },
+  publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
 });
