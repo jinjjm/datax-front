@@ -464,9 +464,9 @@ export default () => {
           initialValues={{
             "shuxing": {
               "status": "1",
+              "apiVersion": 'v1.0.0',
               "apiType": localStorage.getItem('api_id') === 'daoru' ? '1' : '0'
             },
-
           }}
         >
           <ProFormSelect
