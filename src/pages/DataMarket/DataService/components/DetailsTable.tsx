@@ -28,9 +28,14 @@ export default () => {
         history.push('/datamarket/data-service/read-api-details/');
         break;
       case 'edit':
-        localStorage.setItem('api_id', record?.id);
-        localStorage.setItem('api_edit_status', 'true');
-        history.push('/datamarket/data-service/api-details');
+        if (record?.apiType === "1") {//第三方导入
+          localStorage.setItem('api_id', record?.id);
+          history.push('/datamarket/data-service/upload');
+        } else {//apiType 为 0   系统生成型
+          localStorage.setItem('api_id', record?.id);
+          localStorage.setItem('api_edit_status', 'true');
+          history.push('/datamarket/data-service/api-details');
+        }
         break;
       case 'test':
         message.info('测试功能暂未开放');
@@ -71,6 +76,17 @@ export default () => {
       key: 'apiUrl',
       dataIndex: 'apiUrl',
       hideInSearch: true,
+    },
+    {
+      title: 'Api类型',
+      key: 'apiType',
+      dataIndex: 'apiType',
+      align: 'center',
+      hideInSearch: true,
+      valueEnum: {
+        0: { text: '系统生成型' },
+        1: { text: '第三方接入型' },
+      }
     },
     {
       title: '请求类型',

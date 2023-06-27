@@ -166,7 +166,7 @@ export default () => {
               <img width={100} src={listPicture} />
             </Row>
             {/* <br /> */}
-            <Row style={{ marginLeft: 100 }}>
+            <Row style={{ marginLeft: '20%' }}>
               <h1>名称：{detailsData?.data?.apiName}</h1>
             </Row>
             {/* <Row style={{ marginLeft: 100 }}>元数据完善度：{
