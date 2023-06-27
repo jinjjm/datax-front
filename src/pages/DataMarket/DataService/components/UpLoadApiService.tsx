@@ -163,7 +163,16 @@ export default () => {
                                         url: values?.url,
                                         param: values?.param,
                                         paramType: values?.paramType,
+                                        header: values?.header,
                                     },
+                                    apiUrl: values?.url,
+                                    reqMethod: values?.httpMethod,
+                                    resType: 'JSON',//不用但需传参
+                                    param: undefined,
+                                    httpMethod: undefined,
+                                    paramType: undefined,
+                                    url: undefined,
+                                    header: undefined,
                                 }
                                 // 导入api
                                 addDataApis(params).then((res: any) => {
@@ -235,12 +244,6 @@ export default () => {
                                         },
                                         onSelect: onSelect,
                                     }}
-                                    rules={[{ required: request_item }]}
-                                />
-                                <ProFormText
-                                    name={'apiUrl'}
-                                    label="API路径"
-                                    width={width_form_item}
                                     rules={[{ required: request_item }]}
                                 />
                                 <ProFormText
@@ -392,7 +395,7 @@ export default () => {
                             >
                                 <ProFormSelect
                                     name={'httpMethod'}
-                                    label="服务请求方式"
+                                    label="请求方式"
                                     width={width_form_item}
                                     valueEnum={{
                                         GET: 'GET',
@@ -404,7 +407,7 @@ export default () => {
                                 />
                                 <ProFormText
                                     name={'url'}
-                                    label="服务请求地址"
+                                    label="请求地址"
                                     width={width_form_item}
                                     rules={[{ required: request_item }]}
                                 />
