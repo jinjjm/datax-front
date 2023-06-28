@@ -18,7 +18,20 @@ export default [
       {
         name: 'login',
         path: '/user/login',
-        component: './User/Login',
+        component: './User/testLogin',
+      },
+    ],
+  },
+  {
+    path: '/homepage',
+    name: '首页',
+    icon: 'icon-weiwangguanicon-defuben-',
+    routes: [
+      {
+        name: '首页',
+        path:'/homepage',
+        icon: 'icon-bianjiwenjian',
+        component: './HomePage',
       },
     ],
   },
