@@ -125,7 +125,7 @@ export const handleTreeData = (data: [], checkLeaf: Boolean) => {
         };
     }
     // js, map不能改变数组本身的内容，需要重新定义数组来接收
-    let treedata = data.map((leaf: any) => {
+    let treedata = data?.map((leaf: any) => {
         return handleDiGui(leaf);
     });
     console.log(treedata)

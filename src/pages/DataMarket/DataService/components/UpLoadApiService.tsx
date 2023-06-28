@@ -18,7 +18,7 @@ import {
 import { Breadcrumb, Button, Col, Divider, message, Modal, notification, Row, Space, Tag, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
-import { addDataApis, getApiTrees1, getApiTrees2, getDatabaseTableName, getDatasourceList, getTableColumn } from '@/services/ant-design-pro/datax';
+import { addDataApis, getApiDetails, getApiTrees1, getApiTrees2, getDatabaseTableName, getDatasourceList, getTableColumn, updateDataApis } from '@/services/ant-design-pro/datax';
 import { MyIcon } from '@/services/utils/icon';
 import { FileSearchOutlined, SaveOutlined } from '@ant-design/icons';
 import { history } from 'umi';
@@ -89,16 +89,29 @@ export default () => {
 
     // 获取详情
     useEffect(() => {
+        formRef.current?.resetFields(); // 清空表单
         const serviceTempId = history.location.pathname.replace(
             '/datamarket/data-service/',
             '',
         );
         setServiceTemp(serviceTempId);
+        let id = localStorage.getItem('api_id');
+        if (id === null) history.back();
+        else {
+            getApiDetails(id).then((response) => {
+                formRef.current?.setFieldsValue(response);
+                step2FormRef.current?.setFieldsValue({
+                    httpMethod: response?.httpParams?.httpMethod,
+                    url: response?.httpParams?.url,
+                    param: response?.httpParams?.param,
+                    paramType: response?.httpParams?.paramType,
+                    header: response?.httpParams?.header
+                })
+            });
+        }
 
-        if (localStorage.getItem('service_id') === '') history.back();
-        formRef.current?.resetFields(); // 清空表单
 
-    }, [localStorage.getItem('service_id')]);
+    }, [localStorage.getItem('api_id')]);
 
     const onSelect = (keys: React.Key[], info: any) => {
         console.log('keys ', keys);
@@ -163,15 +176,33 @@ export default () => {
                                         url: values?.url,
                                         param: values?.param,
                                         paramType: values?.paramType,
+                                        header: values?.header,
                                     },
+                                    apiUrl: values?.url,
+                                    reqMethod: values?.httpMethod,
+                                    resType: 'JSON',//不用但需传参
+                                    param: undefined,
+                                    httpMethod: undefined,
+                                    paramType: undefined,
+                                    url: undefined,
+                                    header: undefined,
                                 }
-                                // 导入api
-                                addDataApis(params).then((res: any) => {
-                                    if (res?.code === 200) {
-                                        message.success("导入成功");
-                                        history.back();
-                                    } else message.error("导入失败");
-                                })
+                                if (localStorage.getItem("api+id") === 'daoru') {//新建
+                                    // 导入api
+                                    addDataApis(params).then((res: any) => {
+                                        if (res?.code === 200) {
+                                            message.success("导入成功");
+                                            history.back();
+                                        } else message.error("导入失败");
+                                    })
+                                } else {//更新
+                                    updateDataApis(params).then((res: any) => {
+                                        if (res.code === 200) {
+                                            message.success("更新成功");
+                                            history.back();
+                                        } else message.error("更新失败");
+                                    })
+                                }
                                 await waitTime(500);
                             }}
                         >
@@ -235,12 +266,6 @@ export default () => {
                                         },
                                         onSelect: onSelect,
                                     }}
-                                    rules={[{ required: request_item }]}
-                                />
-                                <ProFormText
-                                    name={'apiUrl'}
-                                    label="API路径"
-                                    width={width_form_item}
                                     rules={[{ required: request_item }]}
                                 />
                                 <ProFormText
@@ -383,16 +408,16 @@ export default () => {
                                 {...formItemLayout}
                                 layout={'horizontal'}
                                 initialValues={{
-                                    url: 'http://10.1.40.85:7778/sources/queryList',
-                                    httpMethod: 'POST',
-                                    paramType: '2',
-                                    param: "{\"dataSourceId\": \"1377933635223552\",\"offset\": 0,\"pageNum\": 1,\"pageSize\": 2,\"sql\": \"select * from data_governance.metadata_source\"}"
+                                    // url: 'http://10.1.40.85:7778/sources/queryList',
+                                    // httpMethod: 'POST',
+                                    // paramType: '2',
+                                    // param: "{\"dataSourceId\": \"1377933635223552\",\"offset\": 0,\"pageNum\": 1,\"pageSize\": 2,\"sql\": \"select * from data_governance.metadata_source\"}"
                                     // {"datasourceId":"1377933635223552 ","offset": 0, "pagelum": 1, "pagesize": 2,"sgl": "select *from data_governance.metadata_source"}
                                 }}
                             >
                                 <ProFormSelect
                                     name={'httpMethod'}
-                                    label="服务请求方式"
+                                    label="请求方式"
                                     width={width_form_item}
                                     valueEnum={{
                                         GET: 'GET',
@@ -404,7 +429,7 @@ export default () => {
                                 />
                                 <ProFormText
                                     name={'url'}
-                                    label="服务请求地址"
+                                    label="请求地址"
                                     width={width_form_item}
                                     rules={[{ required: request_item }]}
                                 />

@@ -113,6 +113,12 @@ export default [
         component: './DataMarket/DataMonitoring',
       },
       {
+        path: '/datamarket/data-log',
+        name: '服务日志',
+        icon: 'icon-Tab_shujujiankong',
+        component: './DataMarket/DataLog',
+      },
+      {
         path: '/datamarket/data-integration',
         name: '服务集成',
         icon: 'icon-Tab_shujujiankong',

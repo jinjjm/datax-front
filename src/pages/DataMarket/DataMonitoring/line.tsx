@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Line } from '@ant-design/plots';
-
+import { useRequest } from 'umi';
 const DemoLine = () => {
   const [data, setData] = useState([]);
-  const asyncFetch = () => {
-    fetch('https://gw.alipayobjects.com/os/bmw-prod/55424a73-7cb8-4f79-b60d-3ab627ac5698.json')
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => {
-        console.log('fetch data failed', error);
-      });
-  };
-  useEffect(() => {
-    asyncFetch();
-  }, []);
+  const trend = useRequest(
+    () => {
+      return {
+        url: `http://10.1.40.86:8612/data/api/apiLogs/trend?timeType=${1}`,
+        method: 'GET',
+      };
+    },
+    {
+      onSuccess: (result, params) => {
+        setData(result)
+      }
+    },
+  );
   const config = {
     data,
-    xField: 'year',
+    xField: 'time',
     yField: 'value',
     seriesField: 'category',
     xAxis: {
