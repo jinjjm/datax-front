@@ -18,7 +18,20 @@ export default [
       {
         name: 'login',
         path: '/user/login',
-        component: './User/Login',
+        component: './User/testLogin',
+      },
+    ],
+  },
+  {
+    path: '/homepage',
+    name: '首页',
+    icon: 'icon-weiwangguanicon-defuben-',
+    routes: [
+      {
+        name: '首页',
+        path:'/homepage',
+        icon: 'icon-bianjiwenjian',
+        component: './HomePage',
       },
     ],
   },
@@ -98,6 +111,12 @@ export default [
         name: '服务监控',
         icon: 'icon-Tab_shujujiankong',
         component: './DataMarket/DataMonitoring',
+      },
+      {
+        path: '/datamarket/data-log',
+        name: '服务日志',
+        icon: 'icon-Tab_shujujiankong',
+        component: './DataMarket/DataLog',
       },
       {
         path: '/datamarket/data-integration',
