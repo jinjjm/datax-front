@@ -1,10 +1,13 @@
 .ant-pro-form-login-page-top {
-    margin-top: -2%;
+    margin-top: -0%;
 }
 .ant-pro-form-login-page-title {
     font-size: 25px;
+    margin-top: -10%;
 }
-
+.ant-pro-form-login-page-logo {
+    margin-top: -10%
+}
 .ant-pro-form-login-page-notice {
     background-image: url(http://boot3.jeecg.com/assets/jeecg_ad.93fbfa48.png);
 }

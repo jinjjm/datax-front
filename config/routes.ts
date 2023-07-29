@@ -155,7 +155,7 @@ export default [
   // },
   {
     path: '/',
-    redirect: '/data-source',
+    redirect: '/user/login',
   },
   {
     path: '*',
