@@ -169,7 +169,7 @@ const App = (props: any) => {
     const apiLogsTops = useRequest(
         () => {
             return {
-                url: 'http://10.1.40.86:8612/data/api/apiLogs/tops',
+                url: 'http://172.16.4.72:8612/data/api/apiLogs/tops',
                 method: 'POST',
                 data: {
                     num: number,

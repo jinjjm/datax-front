@@ -30,7 +30,7 @@ export default {
     // localhost:8000/api/** -> https://preview.pro.ant.design/api/**
     '/dataApis': {
       // 要代理的地址
-      target: 'http://10.1.40.86:8612/data/market/dataApis',
+      target: 'http://172.16.4.72:8612/data/market/dataApis',
       // 配置了这个可以从 http 代理到 https
       // 依赖 origin 的功能可能需要这个，比如 cookie
       changeOrigin: true,
@@ -39,17 +39,17 @@ export default {
       // secure: false,
     },
     '/sources': {
-      target: 'http://10.1.40.86:8612/data/metadata/sources',
+      target: 'http://172.16.4.72:8612/data/metadata/sources',
       changeOrigin: true,
       pathRewrite: { '^/sources': '' },
     },
     // '/services': {
-    //   target: 'http://10.1.40.86:8612/data/service/services',
+    //   target: 'http://172.16.4.72:8612/data/service/services',
     //   changeOrigin: true,
     //   pathRewrite: { '^/services': '' },
     // },
     '/service': {
-      target: 'http://10.1.40.86:8612/data/service',
+      target: 'http://172.16.4.72:8612/data/service',
       changeOrigin: true,
       pathRewrite: { '^/service': '' },
     },
@@ -84,17 +84,17 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/dataApis': {
-      target: 'http://10.1.40.86:8612',
+      target: 'http://172.16.4.72:8612',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
     '/sources': {
-      target: 'http://10.1.40.86:8612/sources',
+      target: 'http://172.16.4.72:8612/sources',
       changeOrigin: true,
       pathRewrite: { '^/sources': '' },
     },
     '/service': {
-      target: 'http://10.1.40.86:8612/service',
+      target: 'http://172.16.4.72:8612/service',
       changeOrigin: true,
       pathRewrite: { '^/service': '' },
     },

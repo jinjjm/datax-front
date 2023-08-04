@@ -7,7 +7,7 @@ const DemoLine = () => {
   const trend = useRequest(
     () => {
       return {
-        url: `http://10.1.40.86:8612/data/api/apiLogs/trend?timeType=${1}`,
+        url: `http://172.16.4.72:8612/data/api/apiLogs/trend?timeType=${1}`,
         method: 'GET',
       };
     },

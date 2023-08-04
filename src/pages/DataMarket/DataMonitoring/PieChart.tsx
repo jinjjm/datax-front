@@ -7,7 +7,7 @@ export default (props: any) => {
     const apiLogsCalls = useRequest(
         () => {
             return {
-                url: `http://10.1.40.86:8612/data/api/apiLogs/calls`,
+                url: `http://172.16.4.72:8612/data/api/apiLogs/calls`,
                 method: 'GET',
             };
         },

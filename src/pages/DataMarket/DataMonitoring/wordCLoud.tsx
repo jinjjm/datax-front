@@ -7,7 +7,7 @@ const DemoWordCloud = () => {
     const errorMessage = useRequest(
         () => {
             return {
-                url: `http://10.1.40.86:8612/data/api/apiLogs/errorMessage`,
+                url: `http://172.16.4.72:8612/data/api/apiLogs/errorMessage`,
                 method: 'GET',
             };
         },

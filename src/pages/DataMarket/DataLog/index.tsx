@@ -93,7 +93,7 @@ const App = () => {
     const apiMonitors = useRequest(
         () => {
             return {
-                url: `http://10.1.40.86:8612/data/api/apiLogs/page?apiName=${apiName}&apiType=${apiType}&status=${status}`,
+                url: `http://172.16.4.72:8612/data/api/apiLogs/page?apiName=${apiName}&apiType=${apiType}&status=${status}`,
                 method: 'GET',
             };
         },

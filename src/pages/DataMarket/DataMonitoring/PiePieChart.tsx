@@ -6,7 +6,7 @@ const DemoPie = () => {
     const apiMonitors = useRequest(
         () => {
             return {
-                url: `http://10.1.40.86:8612/data/market/apiMonitors`,
+                url: `http://172.16.4.72:8612/data/market/apiMonitors`,
                 method: 'GET',
             };
         },
