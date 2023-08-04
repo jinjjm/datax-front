@@ -24,6 +24,7 @@ import { useEmotionCss } from '@ant-design/use-emotion-css';
 import './index.css';
 import title from './title.png';
 import { request } from 'express';
+import './OE.png'
 type LoginType = 'phone' | 'account';
 
 const iconStyles: CSSProperties = {
@@ -98,7 +99,7 @@ export default () => {
   const [text, setText] = useState('https://ant.design/');
   return (
     <div className={containerClassName}>
-      <div style={{ width: '70vw', height: '80vh', marginTop: '10vh', marginLeft: '15vw', position: 'relative' }}>
+      <div style={{ width: '70vw', height: '70vh', marginTop: '15vh', marginLeft: '15vw', position: 'relative' }}>
         <div
           style={{
             backgroundColor: 'white',
@@ -328,9 +329,15 @@ export default () => {
           </LoginFormPage>
 
         </div>
-        {/* <div style={{position:'absolute', zIndex: 10, marginTop: '22%', marginLeft:'4%'}}>
-            <Image preview={false} src={require('./title.png')} style={{width:500}}></Image>
-          </div> */}
+        <div style={{position:'absolute', zIndex: 10, marginTop: '12%', marginLeft:'-3%'}}>
+            <Image preview={false} src={require('./OE.png')} style={{width:'40vw'}}></Image>
+        </div>
+        {/* <div style={{position:'absolute', zIndex: 10, marginTop: '20%', marginLeft:'2%'}}>
+          <div style={{fontSize:'50px', color:'white'}}>Welcome</div>
+          <br></br>
+          <br></br>
+          <div style={{fontSize:'33px',color:'white'}}>欢迎来到天津公路数据共享与交换平台</div>
+        </div> */}
       </div>
       <Footer />
     </div>
