@@ -155,7 +155,14 @@ export default [
   // },
   {
     path: '/',
-    redirect: '/user/login',
+    redirect: '/homepage',
+    routes: [
+      {
+        name: 'login',
+        path: '/user/login',
+        component: './User/testLogin',
+      },
+    ],
   },
   {
     path: '*',

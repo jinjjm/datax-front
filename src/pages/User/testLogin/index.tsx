@@ -78,8 +78,8 @@ export default () => {
         await fetchUserInfo();
         console.log("await fetchUserInfo();")
         const urlParams = new URL(window.location.href).searchParams;
-        // history.push(urlParams.get('redirect') || '/');
-        history.push('/homepage' );
+        history.push(urlParams.get('redirect') || '/');
+        // history.push('/homepage' );
         return;
       }
       console.log("登陆失败", msg);
