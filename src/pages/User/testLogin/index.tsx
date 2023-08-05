@@ -312,7 +312,7 @@ export default () => {
             )} */}
             <div
               style={{
-                marginBlockEnd: 24,
+                marginBlockEnd: 25,
               }}
             >
               <ProFormCheckbox noStyle name="autoLogin">
