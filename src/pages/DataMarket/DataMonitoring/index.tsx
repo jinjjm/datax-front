@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Col, Descriptions, Divider, Row, Space, Statistic } from 'antd';
+import { Image, Col, Descriptions, Divider, Row, Space, Statistic } from 'antd';
 import Tabs from "./Tabs"
 import { ProCard, PageContainer } from '@ant-design/pro-components';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
@@ -11,6 +11,19 @@ import { useRequest } from 'umi';
 import Pie from "./PieChart";
 import Pie2 from "./PiePieChart";
 import Pie3 from "./PiePiePieChart";
+
+import type { LarkMapProps } from '@antv/larkmap';
+import { LarkMap } from '@antv/larkmap';
+const config: LarkMapProps = {
+    mapType: 'Gaode',
+    mapOptions: {
+        style: 'light',
+        center: [120.210792, 30.246026],
+        zoom: 9,
+        // token: 'xxxx - token',
+    },
+};
+
 const App = () => {
     const apiLogsCalls = useRequest(
         () => {
@@ -134,6 +147,9 @@ const App = () => {
                             {/* {callFailTotal:16callSuccessTotal:19callTotal:35dayGrowthRate:0successRate:"54.29%"weekGrowthRate: -100} */}
                         </Col>
                     </Row>
+                </ProCard>
+                <ProCard bordered>
+                    <Image src={require("./map.png")} width={'100%'} preview={false} />
                 </ProCard>
                 <Row>
                     <Col span={16}>
