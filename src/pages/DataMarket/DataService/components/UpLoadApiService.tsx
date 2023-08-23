@@ -187,7 +187,7 @@ export default () => {
                                     url: undefined,
                                     header: undefined,
                                 }
-                                if (localStorage.getItem("api+id") === 'daoru') {//新建
+                                if (localStorage.getItem("api_id") === 'daoru') {//新建
                                     // 导入api
                                     addDataApis(params).then((res: any) => {
                                         if (res?.code === 200) {
