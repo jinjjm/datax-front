@@ -1,0 +1,316 @@
+﻿{
+    "50": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.196683,39.158784
+            ]
+          },
+          "properties": {
+            "country": "朝鲜",
+            "time": "1949年10月6日",
+            "flagName": "chaoxian",
+            "type": 1
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.308607,39.095131
+            ]
+          },
+          "properties": {
+            "country": "蒙古",
+            "time": "1949年10月16日",
+            "flagName": "menggu",
+            "type": 1
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.053174,39.059684
+            ]
+          },
+          "properties": {
+            "country": "阿尔巴尼亚",
+            "time": "1949年11月23日",
+            "flagName": "aerbaniya",
+            "type": 1
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.206296,39.111383
+            ]
+          },
+          "properties": {
+            "country": "保加利亚",
+            "time": "1949年10月4日",
+            "flagName": "baojialiya",
+            "type": 1
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.095403,39.099394
+            ]
+          },
+          "properties": {
+            "country": "捷克",
+            "time": "1949年10月6日",
+            "flagName": "jieke",
+            "type": 1
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.347059,39.124435
+            ]
+          },
+          "properties": {
+            "country": "匈牙利",
+            "time": "1949年10月6日",
+            "flagName": "xiongyali",
+            "type": 0
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.610731,39.090868
+            ]
+          },
+          "properties": {
+            "country": "波兰",
+            "time": "1949年10月7日",
+            "flagName": "bolan",
+            "type": 0
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.670469,38.945226
+            ]
+          },
+          "properties": {
+            "country": "罗马尼亚",
+            "time": "1949年10月5日",
+            "flagName": "luomaniya",
+            "type": 1
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.570219,38.880043
+            ]
+          },
+          "properties": {
+            "country": "俄罗斯",
+            "time": "1949年10月2日",
+            "flagName": "eluosi",
+            "type": 0
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.030274,39.353002
+            ]
+          },
+          "properties": {
+            "country": "斯洛伐克",
+            "time": "1949年10月6日",
+            "flagName": "siluofake",
+            "type": 0
+          }
+        },
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+                117.070099,39.211626
+            ]
+          }
+        }
+      ]
+    },
+    "60": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.308607,39.095131
+              ]
+            },
+            "properties": {
+              "country": "蒙古",
+              "time": "1949年10月16日",
+              "flagName": "menggu",
+              "type": 1
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.053174,39.059684
+              ]
+            },
+            "properties": {
+              "country": "阿尔巴尼亚",
+              "time": "1949年11月23日",
+              "flagName": "aerbaniya",
+              "type": 1
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.206296,39.111383
+              ]
+            },
+            "properties": {
+              "country": "保加利亚",
+              "time": "1949年10月4日",
+              "flagName": "baojialiya",
+              "type": 1
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.095403,39.099394
+              ]
+            },
+            "properties": {
+              "country": "捷克",
+              "time": "1949年10月6日",
+              "flagName": "jieke",
+              "type": 1
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.347059,39.124435
+              ]
+            },
+            "properties": {
+              "country": "匈牙利",
+              "time": "1949年10月6日",
+              "flagName": "xiongyali",
+              "type": 0
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.610731,39.090868
+              ]
+            },
+            "properties": {
+              "country": "波兰",
+              "time": "1949年10月7日",
+              "flagName": "bolan",
+              "type": 0
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.670469,38.945226
+              ]
+            },
+            "properties": {
+              "country": "罗马尼亚",
+              "time": "1949年10月5日",
+              "flagName": "luomaniya",
+              "type": 1
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.570219,38.880043
+              ]
+            },
+            "properties": {
+              "country": "俄罗斯",
+              "time": "1949年10月2日",
+              "flagName": "eluosi",
+              "type": 0
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.030274,39.353002
+              ]
+            },
+            "properties": {
+              "country": "斯洛伐克",
+              "time": "1949年10月6日",
+              "flagName": "siluofake",
+              "type": 0
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  117.070099,39.211626
+              ]
+            }
+          }
+        ]
+      }
+
+  }

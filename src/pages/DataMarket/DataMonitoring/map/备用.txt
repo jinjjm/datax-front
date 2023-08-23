@@ -1,0 +1,36 @@
+天津省界
+
+var adCode = 120000;
+		var depth = 2;
+		// 创建省份图层
+		var disProvince  = new AMap.DistrictLayer.Province({
+				zIndex: 12,
+				adcode: [adCode],
+				depth: depth,
+				styles: {
+					'fill': function (properties) {
+						// properties为可用于做样式映射的字段，包含
+						// NAME_CHN:中文名称
+						// adcode_pro
+						// adcode_cit
+						// adcode
+						var adcode = properties.adcode;
+						return getColorByAdcode(adcode);
+					},
+					'province-stroke': 'cornflowerblue',
+					'city-stroke': 'white', // 中国地级市边界
+					'county-stroke': 'rgba(255,255,255,0.5)' // 中国区县边界
+				}
+			});
+		// 颜色辅助方法
+		var colors = {};
+		var getColorByAdcode = function (adcode) {
+			if (!colors[adcode]) {
+				var gb = Math.random() * 155 + 50;
+				colors[adcode] = 'rgb(' + gb + ',' + gb + ',255)';
+			}
+
+			return colors[adcode];
+		};
+		disProvince.setMap(map);
+		

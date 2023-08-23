@@ -11,6 +11,7 @@ import { useRequest } from 'umi';
 import Pie from "./PieChart";
 import Pie2 from "./PiePieChart";
 import Pie3 from "./PiePiePieChart";
+import Mmap from './map/test.html'
 
 import type { LarkMapProps } from '@antv/larkmap';
 import { LarkMap } from '@antv/larkmap';
@@ -23,7 +24,7 @@ const config: LarkMapProps = {
         // token: 'xxxx - token',
     },
 };
-
+// document.write(Mmap)
 const App = () => {
     const apiLogsCalls = useRequest(
         () => {
@@ -150,6 +151,10 @@ const App = () => {
                 </ProCard>
                 <ProCard bordered>
                     <Image src={require("./map.png")} width={'100%'} preview={false} />
+                    {/* <div dangerouslySetInnerHTML={{__html:Mmap}}></div> */}
+                    {/* <LarkMap {...config} style={{ height: '300px' }}>
+                        <h2 style={{ position: 'absolute', left: '10px' }}>LarkMap</h2>
+                    </LarkMap> */}
                 </ProCard>
                 <Row>
                     <Col span={16}>

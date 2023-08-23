@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>接口调用地图</title>
+    <style>
+        html,
+        body,
+        #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-weight: 500;
+            color: #fff;
+            background-color: #000;
+            position: relative;
+        }
+        
+        .demo-title {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 18px;
+            margin: 0;
+            color: rgb(180, 180, 190);
+        }
+
+        h3 {
+            font-size: 12px;
+            font-weight: normal;
+            margin-top: 5px;
+            color: rgb(150,150,150);
+        }
+
+        .time-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 80vw;
+            height: 100px;
+            max-width: 800px;
+            position: absolute;
+            z-index: 0;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(38, 38, 38, 0.4);
+        }
+
+        .item {
+            width: 20px;
+            height: 20px;
+            background-color: #12bfbf;
+            position: relative;
+            border-radius: 50%;
+        }
+
+        .item:hover {
+            cursor: pointer;
+        }
+
+        .item::before,
+        .item::after {
+            content: '';
+            display: block;
+            position: absolute;
+            z-index: -1;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #12bfbf;
+            width: 13.3333333333vw;
+            height: 2px;
+            max-width: 133.3333333333px;
+        }
+
+        .item::before {
+            left: calc(-13.3333333333vw + 10px);
+        }
+
+        .item::after {
+            right: calc(-13.3333333333vw + 10px);
+        }
+
+        .item:first-child::before {
+            width: 0;
+        }
+
+        .item:last-child::after {
+            width: 0;
+        }
+
+        .item.active {
+            background-color: #12bfbf;
+        }
+
+        .item.active span {
+            background-color: #12bfbf;
+            font-weight: 700;
+        }
+
+        .item.active span::before {
+            font-size: 15px;
+        }
+
+        .item.active span::after {
+            font-size: 15px;
+        }
+
+        .item span {
+            width: 14px;
+            height: 14px;
+            background-color: #262626;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .item span::after {
+            visibility: visible;
+            position: absolute;
+            left: 50%;
+            content: attr(data-info);
+            top: 25px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            width: 70px;
+            text-align: center;
+        }
+
+        @media (min-width: 1000px) {
+            .item::before {
+                left: -123.3333333333px;
+            }
+
+            .item::after {
+                right: -123.3333333333px;
+            }
+        }
+
+        @media (max-width: 850px) {
+            .item {
+                width: 10px;
+                height: 10px;
+            }
+
+            .item::before,
+            .item::after {
+                height: 3px;
+            }
+
+            .item::before {
+                left: calc(-13.3333333333vw + 5px);
+            }
+
+            .item::after {
+                right: calc(-13.3333333333vw + 5px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .flex-parent {
+                justify-content: initial;
+            }
+
+            .time-container {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+                height: auto;
+                margin-top: 15vh;
+            }
+
+            .item {
+                width: 60px;
+                height: 60px;
+                margin: 0 10px 50px;
+            }
+
+            .item::before,
+            .item::after {
+                content: none;
+            }
+
+            .item span {
+                width: 100%;
+                height: 100%;
+                display: block;
+            }
+
+            .item span::after {
+                top: 50%;
+                transform: translate(-50%, -50%);
+                color: #12bfbf;
+            }
+
+            .item.active span::after {
+                color: #fff;
+            }
+        }
+    </style>
+    <!--隐藏logo-->
+    <style type="text/css">.amap-logo {display: none;opacity: 0 !important;}.amap-copyright {opacity: 0;}</style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div class="demo-title">
+        <h1>监控接口调用情况</h1>
+        <h3>反映第三方调用系统接口情况</h3>
+        <h4>选择层级</h4>
+        <select name="code-list" style="height: 28px;margin-right: 10px;" onchange="changeDepth(this.value)">
+            <option value="1">1 - 显示市级</option>
+            <option selected value="2">2 - 显示区/县级</option>
+        </select>
+
+        <button id="myButton"></button>
+       
+    </div>
+
+
+    <div class="time-container">
+        <div class="item active">
+            <span data-year="50" data-info="总体"></span>
+        </div>
+        <div class="item">
+            <span data-year="60" data-info="昨日"></span>
+        </div>
+        <div class="item">
+            <span data-year="70" data-info="今日"></span>
+        </div>
+        <!-- <div class="item">
+            <span data-year="80" data-info="80年代"></span>
+        </div>
+        <div class="item">
+            <span data-year="90" data-info="90年代"></span>
+        </div>
+        <div class="item">
+            <span data-year="2000" data-info="2000年后"></span>
+        </div> -->
+    </div>
+    <script src="https://webapi.amap.com/maps?v=2.0&key=3c64e842344348d7a71a21e589490927"></script>
+    <script src="https://webapi.amap.com/loca?v=2.0.0&key=3c64e842344348d7a71a21e589490927"></script>
+    <script src="//a.amap.com/Loca/static/manual/example/script/demo.js"></script>
+    <script src="//a.amap.com/Loca/static/mock/earthquake.js"></script>
+    <script>
+
+        /**
+         * ======================================================================基础图层==========================================================
+         * map loca
+         **/
+        var map = new AMap.Map('map', {
+            zoom: 10,
+			zooms: [4,18],//设置地图级别范围
+            showLabel: true,
+            viewMode: '3D',
+            pitch: 45, // 地图俯仰角度，有效范围 0 度- 83 度   值越小视角越高
+            center: [117.245831,39.102755], //公路局坐标 [117.245831,39.102755]
+            mapStyle: 'amap://styles/grey', // 设置地图的显示样式 macaron darkblue  grey
+			// layers: [new AMap.TileLayer.Satellite()],  //设置图层,可设置成包含一个或多个图层的数组
+        });
+
+        var loca = new Loca.Container({
+            map,
+        });
+
+        // 创建省份图层
+        var adCode = 120000;
+        var depth = 2;
+        var disProvince;
+        function initPro(code, dep) {
+            dep = typeof dep == 'undefined' ? 2 : dep;
+            adCode = code;
+            depth = dep;
+            disProvince && disProvince.setMap(null);
+            disProvince = new AMap.DistrictLayer.Province({
+                zIndex: 12,
+                adcode: [code],
+                depth: dep,
+                styles: {
+                    'fill': function (properties) {
+                        // properties为可用于做样式映射的字段，包含
+                        // NAME_CHN:中文名称
+                        // adcode_pro
+                        // adcode_cit
+                        // adcode
+                        // var adcode = properties.adcode;
+                        return 'rgba(255, 255, 255, 0.18)';
+                        // return getColorByAdcode(dep);
+                    },
+                    'province-stroke': 'rgba(0, 0, 255, 1)', // 省界的描边颜色
+                    'city-stroke': 'rgba(0, 0, 255, 1)', // 市界的描边颜色
+                    'county-stroke': 'rgba(248, 255, 255, 0.5)' // 区界的描边颜色
+                }
+            });
+
+            disProvince.setMap(map);
+        }
+
+        // 颜色辅助方法
+        // var colors = {};
+        // var getColorByAdcode = function (adcode) {
+        //     if (!colors[adcode]) {
+        //         var gb = Math.random() * 155 + 50;
+        //         colors[adcode] = 'rgb(' + gb + ',' + gb + ',255)';
+        //     }
+        //     return colors[adcode];
+        // };
+
+        function changeDepth(dep) {
+            alert(dep);
+            initPro(adCode,dep);
+        }
+
+        initPro(adCode, depth);
+      
+
+         // 自动适配到合适视野范围
+        // 无参数，默认包括所有覆盖物的情况
+        // 没有用
+        map.setFitView();
+
+    
+
+        // 镜头旋转 
+        map.on('complete', function () {
+            loca.animate.start();
+            // document.querySelector('.start-btn').addEventListener('click', function () {
+            setTimeout(animate, 100);  // 延时
+        });
+        // function animate(){
+        //     if (isAnimating) {
+        //         // map.setRotation(1, true);
+        //         loca.viewControl.addAnimates([{
+        //             // 旋转动画
+        //             rotation: {
+        //                 value: 10, // 动画终点的地图旋转角度
+        //                 control: [[0.4, 10], [0.6, 40]], // 控制器，x是0～1的起始区间，y是rotation值
+        //                 timing: [0.42, 0, 0.4, 1],  // 动画时间控制点
+        //                 duration: 2000, // 旋转时间，毫秒（ms）
+        //             }
+        //     }], () => {
+        //         // 动画执行结束
+        //         console.log("结束");
+        //         // if (isAnimating) {
+        //         //     // 继续执行下一帧动画
+        //         //     animate();
+        //         // }
+        //     });
+        //     }     
+        // }
+
+
+        function animate() {
+            if (isAnimating) {
+                loca.viewControl.addAnimates([
+                    {
+                        rotation: {
+                            value: 360, // 动画终点的地图旋转角度  360表示旋转一圈
+                            control: [[0, 0], [1, 360]], // 控制器，x是0～1的起始区间，y是rotation值
+                            timing: [0, 0, 1, 1],
+                            duration: 50000,
+                        },
+                    },
+                ], setTimeout(animate, 1000));  // 回调animate
+            }
+        }
+
+
+        // 监听鼠标点击事件
+        // var isAnimating = true; // 控制动画状态的标志位
+        // document.addEventListener('click', function () {
+            // if (isAnimating) {
+                // 动画正在进行中，暂停动画
+                // loca.animate.pause();
+                // isAnimating = false;
+            // } else {
+                // 动画已暂停，恢复动画
+                // loca.animate.start();
+                // isAnimating = true;
+                // animate();
+            // }
+        // });
+
+    
+        /**
+         * ======================================================================中心点==========================================================
+         * 公路事业发展服务中心
+         **/
+        var centerPointLayer = new Loca.ScatterLayer({
+            zIndex: 10,
+            opacity: 0.8,
+            visible: true,
+            zooms: [2, 22],
+        });
+        var centerPoint = new Loca.GeoJSONSource({
+            data: {
+                'type': 'FeatureCollection',
+                'features': [
+                    {
+                        'type': 'Feature',
+                        'geometry': {
+                            'type': 'Point',
+                            'coordinates': [117.245831,39.102755],
+                        },
+                    },
+                ],
+            },
+        });
+        centerPointLayer.setSource(centerPoint);
+        centerPointLayer.setStyle({
+            size: [3000, 3000],
+            unit: 'meter',
+            texture: 'https://a.amap.com/Loca/static/static/center-point.png',
+        });
+        loca.add(centerPointLayer);
+
+
+        /**
+         * ======================================================================文字图层==========================================================
+         * 文字描述
+         **/
+        var labelLayer = new AMap.LabelsLayer({
+            rejectMapMask: true,
+            collision: true,
+            animation: true,
+        });
+        map.add(labelLayer);
+        var setLabelsLayer = (data) => {
+            labelLayer.clear();
+            // data.features.forEach((item) => {
+            //     var labelsMarker = new AMap.LabelMarker({
+            //         name: item.properties.flagName,
+            //         position: item.geometry.coordinates,
+            //         zooms: [2, 22],
+            //         opacity: 1,
+            //         zIndex: 10,
+            //         text: {
+            //             content: item.properties.country,
+            //             direction: 'bottom',
+            //             offset: [0, -5],
+            //             style: {
+            //                 fontSize: 13,
+            //                 fontWeight: 'normal',
+            //                 fillColor: '#fff',
+            //             },
+            //         },
+            //     });
+            //     labelLayer.add(labelsMarker);
+            // });
+            labelLayer.add(
+                new AMap.LabelMarker({
+                    name: 'tjgl',
+                    position: [117.245831,39.102755],
+                    zooms: [2, 22],
+                    opacity: 1,
+                    zIndex: 10,
+                    rank: 100,
+                    text: {
+                        content: 'TJGL',
+                        direction: 'bottom',
+                        offset: [0, -5],
+                        style: {
+                            fontSize: 10,
+                            fontWeight: 'normal',
+                            fillColor: '#fff',
+                        },
+                    },
+                }),
+            );
+        };
+
+
+        /**
+         * ======================================================================呼吸点==========================================================
+         * API调用的地方 调用的频繁(大于阈值)用红色的呼吸点  不频繁(小于阈值)用绿色的呼吸点
+         **/
+        var scatterLayer1 = new Loca.ScatterLayer({
+            zIndex: 10,
+            opacity: 1,
+            visible: true,
+            zooms: [2, 22],
+        });
+        
+        var scatterLayer2 = new Loca.ScatterLayer({
+            zIndex: 10,
+            opacity: 0.8,
+            visible: true,
+            zooms: [2, 22],
+        });
+        var filterGeoJSON = (json, type) => {
+            var newJSON = {
+                type: 'FeatureCollection',
+                features: [...json.features.filter((item) => item.properties.type === type)],
+            };
+            return new Loca.GeoJSONSource({
+                data: newJSON,
+            });
+        };
+        var scatterGeoMap; 
+        fetch('./diplomacy-point0.json') // https://a.amap.com/Loca/static/static/diplomacy-point.json
+            .then((res) => res.json())
+            .then((data) => {
+                scatterGeoMap = data;
+                setLabelsLayer(scatterGeoMap[50]);
+                var source1 = filterGeoJSON(scatterGeoMap[50], 0);
+                var source2 = filterGeoJSON(scatterGeoMap[50], 1);
+                scatterLayer1.setSource(source1);
+                scatterLayer2.setSource(source2);
+                scatterLayer1.setStyle({
+                    size: [5000, 5000],
+                    unit: 'meter',
+                    animate: true,
+                    duration: 1000,
+                    texture: 'https://a.amap.com/Loca/static/static/green.png',
+                });
+                scatterLayer2.setStyle({
+                    size: [5000, 5000],
+                    unit: 'meter',
+                    animate: true,
+                    duration: 1000,
+                    texture: 'https://a.amap.com/Loca/static/static/orange.png',
+                });
+
+
+                loca.add(scatterLayer1);
+                loca.add(scatterLayer2);
+                loca.animate.start();
+            });
+
+
+             // 点击事件处理程序
+        document.getElementById('myButton').addEventListener('click', function() {
+            alert('按钮被点击了！');
+        });
+
+        // scatterLayer1.on('mousemove', function (ev) {
+        //         alert(111);
+        //     // 事件类型
+        //     var type = ev.type;
+        //     // 当前元素的原始数据
+        //     var rawData = ev.rawData;
+        //     // 原始鼠标事件
+        //     var originalEvent = ev.originalEvent;
+
+        //     openInfoWin(map, originalEvent, {
+        //         '名称': rawData.title,
+        //         '位置': rawData.lnglat
+        //     });
+        // });
+
+        // scatterLayer1.on('mouseleave', function (ev) {
+        //     alert(222);
+        //     closeInfoWin();
+        // });
+    
+      
+        /**
+         * ======================================================================弧线==========================================================
+         * API调用的地方到天津公路事业发展服务中心的脉冲线
+         **/
+        var linkLayer = new Loca.PulseLinkLayer({
+            zIndex: 10,
+            opacity: 1,
+            visible: true,
+            zooms: [2, 22],
+        });
+        var lineGeoMap;
+        fetch('./diplomacy-line.json')
+            .then((res) => res.json())
+            .then((data) => {
+                lineGeoMap = Object.entries(data).reduce((accu, curr) => {
+                    var [key, geo] = curr;
+                    accu[key] = new Loca.GeoJSONSource({
+                        data: geo,
+                    });
+                    return accu;
+                }, {});
+                linkLayer.setSource(lineGeoMap[50]);
+                linkLayer.setStyle({
+                    // 弧线颜色
+                    lineColors: function (index, item) {
+                        return item.link.properties.type === 0 ? ['#25CDEA', '#12BFBF'] : ['#FFD87B', '#FF4F00'];
+                    },
+                    // 弧顶的高度，单位为米
+                    height: function (index, item) {
+                        return item.distance / 3;
+                    },
+                    // 平滑步数，代表弧线的分隔段数，越大平滑度越好，但更消耗性能，默认为50
+                    smoothSteps: function (index, item) {
+                        return 200;
+                    },
+                    
+
+                    // px 和 meter，代表此图层的样式单位，像素或者米。
+                    unit: 'meter',
+                    
+                    // 连接线的虚线配置信息：[实线长度, 虚线长度, 实线长度, 虚线长度];
+                    dash: [200, 0, 200, 0],
+                    
+                    // 连接线的头尾宽度设置：[起点宽度，终点宽度];单位跟随 unit 字段变化。
+                    lineWidth: function () {
+                        return [200, 200];
+                    },
+                    
+                    // 速度，每个脉冲点行进的速度（可以针对每个线路进行单独设置速度）。单位：米/秒 或者 像素/秒。
+                    speed: function (index, prop) {
+                        return 5000 + Math.random() * 100;    
+                    },
+                    // 脉冲点的头部颜色。
+                    headColor: 'rgb(255,255,0)', 
+                    
+                    // 脉冲点的尾部颜色。
+                    trailColor: 'rgb(255, 255,255)',
+                    
+                    // 脉冲点的长度。单位跟随 unit 字段变化。如果不希望有脉冲动画，设置此长度为 0 即可。
+                    flowLength: 2000,
+                });
+                loca.add(linkLayer);
+            });
+
+        /**
+         * ======================================================================滚动条==========================================================
+         * 选择日期
+         **/
+        var items = document.querySelectorAll('.item');
+        for (var i = 0; i < items.length; i++) {
+            (function (j) {
+                items[j].onclick = () => {
+                    var element = items[j];
+                    var key = element.children[0].dataset.year;
+                    document.querySelector('div.item.active').classList.remove('active');
+                    element.classList.add('active');
+                    linkLayer.setSource(lineGeoMap[key]);
+                    // setLabelsLayer(scatterGeoMap[key]);
+                    scatterLayer1.setSource(filterGeoJSON(scatterGeoMap[key], 0));
+                    scatterLayer2.setSource(filterGeoJSON(scatterGeoMap[key], 1));
+                };
+            })(i);
+        }
+
+       
+    </script>
+</body>
+
+</html>
