@@ -248,5 +248,24 @@ export async function releaseApi(id: any) {
 export async function detailAndHeaderApi(id: any) {
   return request(`/dataApis/detail/${id}`, {
     method: 'GET',
-  }).then((res)=>res.data).catch((error) => console.log(error));
+  }).then((res) => res.data).catch((error) => console.log(error));
 }
+/** 查看api信息 执行操作接口 */
+export async function execute({ apiKey, secretKey }: { apiKey: string, secretKey: string }) {
+  const headers = {
+    "api_key": apiKey,
+    "secret_key": secretKey,
+  }
+  return request(`/service/execute`, {
+    method: 'POST',
+    headers: headers,
+    data: {}
+  }).then((res) => res).catch((error) => console.log(error));
+}
+/** 取消发布 */
+export async function cancel(id: string) {
+  return request(`/dataApis/${id}/cancel`, {
+    method: 'POST',
+  }).then((res: object) => res).catch((error) => console.log(error));
+}
+

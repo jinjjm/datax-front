@@ -146,4 +146,17 @@ declare namespace API {
     fieldComment: string;
     fieldAliasName?: any;
   };
+  type resLogsColumns = {
+    id: string;
+    apiId: string;
+    apiName: string;
+    apiType: string;
+    callerIp: string;
+    callerLocation: string;
+    callerLonlat: string;
+    callerUrl: string;
+    callerDate: string;
+    time: string;
+    status: string;
+  }
 }

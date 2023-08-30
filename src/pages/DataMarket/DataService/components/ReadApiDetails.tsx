@@ -1,39 +1,57 @@
-import { PageContainer, ProCard, ProDescriptions, ProForm, ProFormGroup, ProFormInstance, ProFormList, ProFormSelect, ProFormText } from '@ant-design/pro-components';
-import { Avatar, Button, Card, Col, Descriptions, Divider, Row, Badge, Statistic, Collapse, TabsProps, Tabs, Space, Dropdown, MenuProps, Input, Table } from 'antd';
+import { PageContainer, ProCard, ProDescriptions, ProForm, ProFormGroup, ProFormInstance, ProFormList, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
+import {
+  Avatar, Button, Card, Col, Descriptions, Divider, Row, Badge, Statistic, Collapse, TabsProps,
+  Tabs, Space, Dropdown, MenuProps, Input, Tag, Alert, Timeline, message,
+} from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import base from './icon/信息.svg';
 import details from './icon/文档.svg';
 import listPicture from "./icon/资产弹窗资产处置.svg"
 import '../index.css';
-import { detailAndHeaderApi } from '@/services/ant-design-pro/datax';
-import { DownOutlined } from '@ant-design/icons';
+import { detailAndHeaderApi, execute } from '@/services/ant-design-pro/datax';
+import { CheckCircleFilled, ClockCircleOutlined, CloseCircleFilled, DownOutlined } from '@ant-design/icons';
 import { MyIcon } from '@/services/utils/icon';
+import { ColumnsType } from 'antd/es/table';
 // import Table from './Table';
-const { Meta } = Card;
 const { Panel } = Collapse;
-const text = `
-  A dog is a type of domesticated animal.
-  Known for its loyalty and faithfulness,
-  it can be found as a welcome guest in many households across the world.
-`;
+
+import { useRequest } from 'umi';
+
+
 export default () => {
-  const [name, setName] = useState("资产名称");
   const [detailsData, setDetailsData] = useState<any>({});
-  const [metadata, setMetadata] = useState(11.28);
+  const [resShowData, setResShowData] = useState<Object>({});// 接口请求的返回结果
+  const [itemResHidden, setItemResHidden] = useState<Boolean>(false);// 隐藏返回结果面板
   const reqFormListRef = useRef<ProFormInstance>(); // 格式化参数表单ref
   const resFormListRef = useRef<ProFormInstance>(); // 格式化参数表单ref
   const fieldRef = useRef<ProFormInstance>(); // 格式化参数表单ref
   //标签页
-  const [tabaction, setTabaction] = useState("1")
-  const onChange = (key: string) => {
+  const [tabaction, setTabaction] = useState("1") // tab标识，用于切换tab时请求
+  const onChangeItemRes = (key: string) => {
+    // setTabaction(key)
+  };
+  const onChangeitems = (key: string) => {
     setTabaction(key)
+    if (key === '3') {//3-请求日志
+      setItemResHidden(true)
+    } else {
+      setItemResHidden(false)
+    }
   };
   useEffect(() => {
     let id = localStorage.getItem("api_id");
     detailAndHeaderApi(id).then((res) => {
       setDetailsData(res);
+      if (res?.data?.webParams) { // 防止
+        setResShowData(JSON.parse(res?.data?.webParams))
+      } else {
+        setResShowData({})
+      }
       if (res?.data?.apiType === '1') {//第三方接入
-        let dd = JSON.parse(res?.data?.httpParams?.param || "");
+        let dd = {};
+        if (res?.data?.httpParams?.param) {
+          dd = JSON.parse(res?.data?.httpParams?.param);
+        }
         let list: { name: string; value: any; }[] = [];
         Object.keys(dd).forEach(function (key: string) {
           list.push({
@@ -56,7 +74,8 @@ export default () => {
         })
       }
     });
-  }, [tabaction]);
+  }, []);
+  // }, [tabaction]);
   const letxing = (value: any) => {
     if (value === '0') return '系统生成型';
     if (value === '1') return '第三方接入型';
@@ -75,6 +94,141 @@ export default () => {
     if (value === '2') return '脚本模式';
   };
 
+
+  const columns: ColumnsType<API.resLogsColumns> = [
+    {
+      title: 'API名称',
+      dataIndex: 'apiName',
+      key: 'name',
+      align: 'center',
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: 'API类型',
+      dataIndex: 'apiType',
+      key: 'apiType',
+      align: 'center',
+      render: (_, record) => {
+        let content;
+        if (record.apiType === '0') {
+          content = '系统生成型';
+        } else {
+          content = '第三方接入型';
+        }
+        return <span>{content}</span>;
+      },
+    },
+    {
+      title: '调用者IP',
+      dataIndex: 'callerIp',
+      key: 'address',
+      align: 'center',
+    },
+    {
+      title: '请求路径',
+      key: 'callerUrl',
+      dataIndex: 'callerUrl',
+      align: 'center',
+    },
+    {
+      title: '调用数据量',
+      key: 'callerSize',
+      dataIndex: 'callerSize',
+      align: 'center',
+    },
+    {
+      title: '请求参数',
+      dataIndex: 'callerParams',
+      key: 'callerParams',
+    },
+    {
+      title: '请求时间',
+      dataIndex: 'callerDate',
+      key: 'callerDate',
+      align: 'center',
+    },
+    {
+      title: '请求耗时',
+      dataIndex: 'time',
+      key: 'time',
+      align: 'center',
+    },
+    {
+      title: '请求状态',
+      dataIndex: 'status',
+      key: 'status',
+      align: 'center',
+      render: (_, record) => {
+        let content;
+        if (record.status === '0') {
+          content = '失败';
+          return (
+            <Alert message="失败" type="error" showIcon style={{ width: 85 }} />
+          );
+        } else {
+          content = '成功';
+          return (
+            <Alert message="成功" type="success" showIcon style={{ width: 85 }} />
+          );
+        }
+      },
+    }
+  ];
+
+  const apiMonitors = useRequest(
+    (data = {}) => {
+      return {
+        url: `http://172.16.4.72:8612/data/api/apiLogs/page?`,
+        method: 'GET',
+        params: {
+          apiName: data?.apiName,
+          pageSize: data?.pageSize,
+        }
+      };
+    },
+    {
+      manual: true,
+    }
+  );
+  const [timeLineData, setTimeLineData] = useState([]) // tab标识，用于切换tab时请求
+  useEffect(() => {
+    if (tabaction === '3') {
+      let timeLine: any = [];
+      let color, colorText, color2
+      apiMonitors.run({ apiName: localStorage.getItem('api_name'), pageSize: 40 }).then((res) => {
+        (res?.data || []).map((record: API.resLogsColumns) => {
+          color = record?.status === '1' ? 'green' : 'red';
+          color2 = record?.status === '1' ? 'rgb(86 176 60)' : 'rgb(218 76 65)';
+          colorText = record?.status === '1' ? '成功' : '失败';
+          if (record?.status === '1')
+            timeLine.push({
+              dot: <CheckCircleFilled color={color} />,
+              label: record?.callerDate,
+              children: <div style={{ display: 'flex' }}>
+                {/* <Tag color={color2} style={{ height: '90%' }}>{record?.status === '1' ? <CheckCircleFilled /> : <CloseCircleFilled />}&nbsp;{colorText}</Tag> */}
+                {"调用者IP："}<Tag color="volcano" style={{ height: '100%', color: '#000' }}>{record?.callerIp} </Tag>
+                {"请求耗时："}<Tag color="cyan" style={{ height: '100%', color: '#000' }}>{record?.time} s</Tag>
+              </div>,
+              position: 'right',
+              color: color,
+            })
+          else
+            timeLine.push({
+              dot: <CloseCircleFilled color={color} />,
+              label: record?.callerDate,
+              children: <div style={{ display: 'flex' }}>
+                {/* <Tag color={color2} style={{ height: '90%' }}>{record?.status === '1' ? <CheckCircleFilled /> : <CloseCircleFilled />}&nbsp;{colorText}</Tag> */}
+                {"调用者IP："}<Tag color="volcano" style={{ height: '100%', color: '#000' }}>{record?.callerIp} </Tag>
+                {"请求耗时："}<Tag color="cyan" style={{ height: '100%', color: '#000' }}>{record?.time}</Tag>
+              </div>,
+              position: 'right',
+              color: color,
+            })
+        })
+      });
+      setTimeLineData(timeLine);
+    }
+  }, [tabaction])
 
   const items: TabsProps['items'] = [//一级tab页
     {
@@ -200,7 +354,7 @@ export default () => {
     {
       key: '2',
       label: '执行配置',
-      hidden: detailsData?.data?.apiType === '1' ? true : false,
+      disabled: detailsData?.data?.apiType === '1' ? true : false,
       children: (
         <Collapse defaultActiveKey={['1', '2', '3']} >
           <Panel header="配置基本信息" key="1">
@@ -266,6 +420,58 @@ export default () => {
           </Panel>
         </Collapse>
       )
+    },
+    {
+      key: '3',
+      label: '调用历史',
+      children: (
+        <>
+          <div
+            style={{
+              height: 650,
+              overflow: 'auto',
+              padding: '0 16px',
+
+            }}>
+            <Timeline
+              style={{ marginLeft: '-30%' }}
+              mode={'left'}
+              items={timeLineData}
+            />
+          </div>
+          {/* <ProTable<API.resLogsColumns>
+            columns={columns}
+            cardBordered
+            request={(
+              // 第一个参数 params 查询表单和 params 参数的结合
+              // 第一个参数中一定会有 pageSize 和  current ，这两个参数是 antd 的规范
+              params: {
+                pageSize: number; // 页数
+                current: number; // 每页个数
+              },
+              sort,
+              filter,
+            ) => {
+              // 这里需要返回一个 Promise,在返回之前你可以进行数据转化
+              // 如果需要转化参数可以在这里进行修改
+              return apiMonitors.run({
+                apiName: localStorage.getItem('api_name'),
+                pageNum: params?.current,
+                pageSize: params?.pageSize,
+              })
+            }}
+            rowKey="id"
+            search={false}
+            pagination={{
+              pageSize: 10,
+              onChange: (page) => console.log(page),
+            }}
+            dateFormatter="string"
+            headerTitle="="
+            toolBarRender={false}
+          /> */}
+        </>
+      )
     }
   ];
   const itemsRes: TabsProps['items'] = [//一级tab页
@@ -280,47 +486,30 @@ export default () => {
             padding: '0 16px',
           }}>
           <pre>
-            <code>{JSON.stringify(detailsData, null, 4)}</code>
+            <code>{JSON.stringify(resShowData, null, 4)}</code>
           </pre>
         </Card>
         // 明细信息二级tab页
       )
     },
   ];
+  const handle = () => {
+    // detailsData?.header?.apiKey,
+    //   secretKey: detailsData?.header?.secretKey,
+    execute({ apiKey: detailsData?.header?.apiKey, secretKey: detailsData?.header?.secretKey })
+      .then((res) => {
+        if (res) {
+          message.success("执行成功！")
+          setResShowData(res)
+        }
+      })
+
+  }
   return (
     <PageContainer title="查看API详情" extra={[
       <Button type="primary" onClick={() => history.back()}>
         返回
       </Button>]}>
-      {/* <Table
-        dataSource={[{
-          value: '类型',
-          v1:"varchar",
-          v2:"varchar",
-          v3:'int'
-        }]}
-        columns={[
-          {
-            title: '名称',
-            dataIndex: 'value',
-            key: 'value',
-          },
-          {
-            title: "id",
-            dataIndex: 'v1',
-            key: 'v1',
-          },
-          {
-            title: "name",
-            dataIndex: 'v2',
-            key: 'v2',
-          },
-          {
-            title: "age",
-            dataIndex: 'v3',
-            key: 'v3',
-          },
-        ]} /> */}
       <Row style={{ height: '100%', backgroundColor: '#fff' }}>
         <Col span={6} >
           <Card >
@@ -375,10 +564,10 @@ export default () => {
                   <Button type='primary'>{detailsData?.data?.reqMethod}</Button>
                   &nbsp;&nbsp;
                   <Input value={detailsData?.data?.apiUrl} style={{ width: '30vw' }} />
-                  <Button type='primary'>执行</Button>
+                  <Button type='primary' onClick={handle}>执行</Button>
                 </Space>
-                <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-                <Tabs defaultActiveKey="1" items={itemsRes} onChange={onChange} />
+                <Tabs defaultActiveKey="1" items={items} onChange={onChangeitems} />
+                {!itemResHidden && <Tabs defaultActiveKey="1" items={itemsRes} onChange={onChangeItemRes} />}
                 {/* 一级tab页 */}
               </ProCard>
             </Row>

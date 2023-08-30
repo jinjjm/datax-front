@@ -1,4 +1,4 @@
-import { copyApiInfo, deleteApiInfo, getApiList, releaseApi } from '@/services/ant-design-pro/datax';
+import { cancel, copyApiInfo, deleteApiInfo, getApiList, releaseApi } from '@/services/ant-design-pro/datax';
 import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
@@ -25,6 +25,7 @@ export default () => {
       case 'read':
         localStorage.setItem('api_id', record?.id);
         localStorage.setItem('api_edit_status', 'false');
+        localStorage.setItem('api_name', record?.apiName);
         history.push('/datamarket/data-service/read-api-details/');
         break;
       case 'edit':
@@ -44,6 +45,16 @@ export default () => {
         releaseApi(record?.id).then(() => action?.reload());
         message.success('发布完成');
         break;
+      case 'unrelease':
+        cancel(record?.id).then((res) => {
+          if (res.code === 200) {
+            message.success('取消发布');
+            action?.reload();
+          }
+        });
+        break;
+      // unrelease
+
     }
   };
 
@@ -132,6 +143,7 @@ export default () => {
           menus={[
             // { key: 'test', name: '测试' },
             { key: 'release', name: '发布' },
+            { key: 'unrelease', name: '取消发布' },
             { key: 'edit', name: '编辑' },
             { key: 'read', name: '查看' },
             { key: 'copy', name: '拷贝' },
@@ -143,6 +155,7 @@ export default () => {
       ],
     },
   ];
+  
   return (
     <ProTable<API.ApiList>
       columns={columns}
