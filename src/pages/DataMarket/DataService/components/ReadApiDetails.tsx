@@ -219,7 +219,7 @@ export default () => {
               children: <div style={{ display: 'flex' }}>
                 {/* <Tag color={color2} style={{ height: '90%' }}>{record?.status === '1' ? <CheckCircleFilled /> : <CloseCircleFilled />}&nbsp;{colorText}</Tag> */}
                 {"调用者IP："}<Tag color="volcano" style={{ height: '100%', color: '#000' }}>{record?.callerIp} </Tag>
-                {"请求耗时："}<Tag color="cyan" style={{ height: '100%', color: '#000' }}>{record?.time}</Tag>
+                {"请求耗时："}<Tag color="cyan" style={{ height: '100%', color: '#000' }}>{record?.time||" "}</Tag>
               </div>,
               position: 'right',
               color: color,
@@ -434,7 +434,7 @@ export default () => {
 
             }}>
             <Timeline
-              style={{ marginLeft: '-30%' }}
+              style={{ marginLeft: '-30%',marginTop:'1%' }}
               mode={'left'}
               items={timeLineData}
             />

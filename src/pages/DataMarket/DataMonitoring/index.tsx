@@ -149,13 +149,13 @@ const App = () => {
                         </Col>
                     </Row>
                 </ProCard>
-                <ProCard bordered>
-                    <Image src={require("./map.png")} width={'100%'} preview={false} />
+                {/* <ProCard bordered> */}
+                    {/* <Image src={require("./map.png")} width={'100%'} preview={false} /> */}
                     {/* <div dangerouslySetInnerHTML={{__html:Mmap}}></div> */}
                     {/* <LarkMap {...config} style={{ height: '300px' }}>
                         <h2 style={{ position: 'absolute', left: '10px' }}>LarkMap</h2>
                     </LarkMap> */}
-                </ProCard>
+                {/* </ProCard> */}
                 <Row>
                     <Col span={16}>
                         <ProCard bordered style={{ height: "55vh" }}>
