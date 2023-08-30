@@ -130,11 +130,11 @@ export default () => {
           key="actionGroup"
           onSelect={(key: any) => handlerOption(key, record, action)}
           menus={[
-            { key: 'test', name: '测试' },
+            // { key: 'test', name: '测试' },
+            { key: 'release', name: '发布' },
             { key: 'edit', name: '编辑' },
             { key: 'read', name: '查看' },
             { key: 'copy', name: '拷贝' },
-            { key: 'release', name: '发布' },
             { key: 'delete', name: '删除' },
           ]}
         >
