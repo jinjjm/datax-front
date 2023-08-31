@@ -1,9 +1,10 @@
 import { PageContainer, ProCard, ProDescriptions, ProForm, ProFormGroup, ProFormInstance, ProFormList, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
 import {
   Avatar, Button, Card, Col, Descriptions, Divider, Row, Badge, Statistic, Collapse, TabsProps,
-  Tabs, Space, Dropdown, MenuProps, Input, Tag, Alert, Timeline, message,
+  Tabs, Space, Select, MenuProps, Input, Tag, Alert, Timeline, message,
 } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import { history } from '@umijs/max';
 import base from './icon/信息.svg';
 import details from './icon/文档.svg';
 import listPicture from "./icon/资产弹窗资产处置.svg"
@@ -39,7 +40,12 @@ export default () => {
     }
   };
   useEffect(() => {
+
     let id = localStorage.getItem("api_id");
+    if (!id) {
+      history.push('/user/login')
+      message.warning('请重新登录')
+    }
     detailAndHeaderApi(id).then((res) => {
       setDetailsData(res);
       if (res?.data?.webParams) { // 防止
@@ -219,7 +225,7 @@ export default () => {
               children: <div style={{ display: 'flex' }}>
                 {/* <Tag color={color2} style={{ height: '90%' }}>{record?.status === '1' ? <CheckCircleFilled /> : <CloseCircleFilled />}&nbsp;{colorText}</Tag> */}
                 {"调用者IP："}<Tag color="volcano" style={{ height: '100%', color: '#000' }}>{record?.callerIp} </Tag>
-                {"请求耗时："}<Tag color="cyan" style={{ height: '100%', color: '#000' }}>{record?.time||" "}</Tag>
+                {"失败原因："}<Tag color="geekblue" style={{ height: '100%', color: '#000' }}>{record?.msg}</Tag>
               </div>,
               position: 'right',
               color: color,
@@ -230,6 +236,10 @@ export default () => {
     }
   }, [tabaction])
 
+  const [select, setSelect] = useState<any>();// 接口请求的返回结果
+  const handleSelectChange = (value: string) => {
+    setSelect(value)
+  };
   const items: TabsProps['items'] = [//一级tab页
     {
       key: '1',
@@ -426,50 +436,63 @@ export default () => {
       label: '调用历史',
       children: (
         <>
-          <div
-            style={{
-              height: 650,
-              overflow: 'auto',
-              padding: '0 16px',
+            {/* <Select
+              defaultValue="time"
+              style={{ width: 200 }}
+              onChange={handleSelectChange}
+              options={[
+                { value: 'time', label: '时间轴显示(前50次调用)' },
+                { value: 'table', label: '表格显示' },
+              ]}
+            /> */}
+            <div
+              style={{
+                height: 650,
+                overflow: 'auto',
+                padding: '0 16px',
+              }}>
+              <Timeline
+                style={{ marginLeft: '-30%', marginTop: '1%' }}
+                mode={'left'}
+                items={timeLineData}
+              />
 
-            }}>
-            <Timeline
-              style={{ marginLeft: '-30%',marginTop:'1%' }}
-              mode={'left'}
-              items={timeLineData}
-            />
-          </div>
-          {/* <ProTable<API.resLogsColumns>
-            columns={columns}
-            cardBordered
-            request={(
-              // 第一个参数 params 查询表单和 params 参数的结合
-              // 第一个参数中一定会有 pageSize 和  current ，这两个参数是 antd 的规范
-              params: {
-                pageSize: number; // 页数
-                current: number; // 每页个数
-              },
-              sort,
-              filter,
-            ) => {
-              // 这里需要返回一个 Promise,在返回之前你可以进行数据转化
-              // 如果需要转化参数可以在这里进行修改
-              return apiMonitors.run({
-                apiName: localStorage.getItem('api_name'),
-                pageNum: params?.current,
-                pageSize: params?.pageSize,
-              })
-            }}
-            rowKey="id"
-            search={false}
-            pagination={{
-              pageSize: 10,
-              onChange: (page) => console.log(page),
-            }}
-            dateFormatter="string"
-            headerTitle="="
-            toolBarRender={false}
-          /> */}
+            </div>
+            {/* <div style={{
+              display: select === 'table' ? false : 'none'
+            }} >
+              <ProTable<API.resLogsColumns>
+                columns={columns}
+                cardBordered
+                request={(
+                  // 第一个参数 params 查询表单和 params 参数的结合
+                  // 第一个参数中一定会有 pageSize 和  current ，这两个参数是 antd 的规范
+                  params: {
+                    pageSize: number; // 页数
+                    current: number; // 每页个数
+                  },
+                  sort,
+                  filter,
+                ) => {
+                  // 这里需要返回一个 Promise,在返回之前你可以进行数据转化
+                  // 如果需要转化参数可以在这里进行修改
+                  return apiMonitors.run({
+                    apiName: localStorage.getItem('api_name'),
+                    pageNum: params?.current,
+                    pageSize: params?.pageSize,
+                  })
+                }}
+                rowKey="id"
+                search={false}
+                pagination={{
+                  pageSize: 10,
+                  onChange: (page) => console.log(page),
+                }}
+                dateFormatter="string"
+                headerTitle="="
+                toolBarRender={false}
+              />
+            </div> */}
         </>
       )
     }
@@ -507,7 +530,10 @@ export default () => {
   }
   return (
     <PageContainer title="查看API详情" extra={[
-      <Button type="primary" onClick={() => history.back()}>
+      <Button type="primary" onClick={() => {
+        history.push('/datamarket/data-service');
+        localStorage.clear()//清除localstorage存储的变量
+      }}>
         返回
       </Button>]}>
       <Row style={{ height: '100%', backgroundColor: '#fff' }}>

@@ -340,7 +340,10 @@ export default () => {
     },
   ];
   useEffect(() => {
-    if (localStorage.getItem('api_id') === null) history.back();
+    if (localStorage.getItem('api_id') === null) {
+      hhhistory.push('/user/login')
+      message.warning('请重新登录')
+    };
     let id = localStorage.getItem('api_id');
     console.log(id);
     // let data;
@@ -396,7 +399,10 @@ export default () => {
           >
             接口测试
           </Button>
-          <Button type="dashed" icon={<MyIcon type="icon-fanhui" />} onClick={() => history.back()}>
+          <Button type="dashed" icon={<MyIcon type="icon-fanhui" />} onClick={() => {
+            hhhistory.push('/datamarket/data-service');
+            localStorage.clear()//清除localstorage存储的变量
+          }}>
             返回
           </Button>
         </Space>

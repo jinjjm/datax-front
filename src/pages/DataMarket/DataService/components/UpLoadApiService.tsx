@@ -17,6 +17,7 @@ import {
 } from '@ant-design/pro-components';
 import { Breadcrumb, Button, Col, Divider, message, Modal, notification, Row, Space, Tag, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
+import { history as hhhistory } from '@umijs/max';
 
 import { addDataApis, getApiDetails, getApiTrees1, getApiTrees2, getDatabaseTableName, getDatasourceList, getTableColumn, updateDataApis } from '@/services/ant-design-pro/datax';
 import { MyIcon } from '@/services/utils/icon';
@@ -96,7 +97,10 @@ export default () => {
         );
         setServiceTemp(serviceTempId);
         let id = localStorage.getItem('api_id');
-        if (id === null) history.back();
+        if (id === null) {
+            hhhistory.push('/user/login')
+            message.warning('请重新登录')
+        }
         else {
             getApiDetails(id).then((response) => {
                 formRef.current?.setFieldsValue(response);
@@ -157,7 +161,10 @@ export default () => {
                     <Button
                         type="dashed"
                         icon={<MyIcon type="icon-fanhui" />}
-                        onClick={() => history.back()}
+                        onClick={() => {
+                            hhhistory.push('/datamarket/data-service');
+                            localStorage.clear()//清除localstorage存储的变量
+                        }}
                     >
                         返回
                     </Button>

@@ -1,4 +1,4 @@
-﻿import type { RequestConfig } from '@umijs/max';
+﻿import type { RequestConfig, RequestOptions } from '@umijs/max';
 import { message, notification } from 'antd';
 
 // 错误处理方案： 错误类型
@@ -66,7 +66,7 @@ export const errorConfig: RequestConfig = {
               // TODO: redirect
               break;
             default:
-              // message.error(errorMessage);
+            // message.error(errorMessage);
           }
         }
       } else if (error.response) {
@@ -86,13 +86,15 @@ export const errorConfig: RequestConfig = {
   },
 
   // 请求拦截器
-  // requestInterceptors: [
-  //   (config: RequestOptions) => {
-  //     // 拦截请求配置，进行个性化处理。
-  //     const url = config?.url?.concat('?token = 123');
-  //     return { ...config, url };
-  //   },
-  // ],
+  requestInterceptors: [
+    (config: RequestOptions) => {
+      // 拦截请求配置，进行个性化处理。
+      const url = config?.url;
+      // console.log('请求拦截', config)
+      // const url = config?.url?.concat('?token = 123');
+      return { ...config, url };
+    },
+  ],
 
   // 响应拦截器
   responseInterceptors: [
