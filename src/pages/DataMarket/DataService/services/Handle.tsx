@@ -128,7 +128,7 @@ export const handleTreeData = (data: [], checkLeaf: Boolean) => {
     let treedata = data?.map((leaf: any) => {
         return handleDiGui(leaf);
     });
-    console.log(treedata)
+    // console.log(treedata)
     return treedata;
 }
 /**

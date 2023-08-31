@@ -191,7 +191,7 @@ export default ({ treeType }: { treeType: Number }) => {
 
   useEffect(() => {
     // 区分输出接口和输入接口
-    console.log(treeType)
+    // console.log(treeType)
     treeType === 1 ?
       getApiTrees1().then((res) => {
         // console.log(handleTreeData(res))

@@ -345,7 +345,6 @@ export default () => {
       message.warning('请重新登录')
     };
     let id = localStorage.getItem('api_id');
-    console.log(id);
     // let data;
     if (id && id !== 'new' && id !== '') {
       getApiDetails(id).then((response) => {
@@ -373,8 +372,8 @@ export default () => {
   }, [localStorage.getItem('api_id'), history.state]);
 
   const onSelect = (keys: React.Key[], info: any) => {
-    console.log('keys ', keys);
-    console.log('info: ', info);
+    // console.log('keys ', keys);
+    // console.log('info: ', info);
   };
   return (
     <ProCard
@@ -427,7 +426,7 @@ export default () => {
             reqParams: handleTransforString(canshu?.reqParams, "reqParams") || [],
             resParams: canshu?.resParams || [],
           };
-          console.log("params: ", params);
+          // console.log("params: ", params);
           if (params?.id) {
             // 修改
             updateDataApis(params).then((res: any) => {
@@ -463,7 +462,7 @@ export default () => {
           name="shuxing"
           title="属性配置"
           onFinish={async (values) => {
-            console.log(values);
+            // console.log(values);
             await waitTime(500);
             return true;
           }}
@@ -657,7 +656,7 @@ export default () => {
           title="执行配置"
           layout={readonlyfrom ? 'horizontal' : 'vertical'}
           onFinish={async (values: any) => {
-            console.log(values)
+            // console.log(values)
             let reqTb: any[] = [];
             let resTb: any[] = [];
             // 如果是新建或是修改了请求返回列名，需要根据表单二的内容对表单三进行赋值
@@ -904,7 +903,7 @@ export default () => {
           formRef={modalFormRef}
           name="tuomin"
           onFinish={async (values) => {
-            console.log(values)
+            // console.log(values)
             settuominModal(false);
           }}
           layout={'horizontal'}

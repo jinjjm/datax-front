@@ -118,8 +118,8 @@ export default () => {
     }, [localStorage.getItem('api_id')]);
 
     const onSelect = (keys: React.Key[], info: any) => {
-        console.log('keys ', keys);
-        console.log('info: ', info);
+        // console.log('keys ', keys);
+        // console.log('info: ', info);
     };
 
     const rightCardTitle = () => {
@@ -175,7 +175,7 @@ export default () => {
                         <StepsForm
                             formRef={formRef}
                             onFinish={async (values: any) => {
-                                console.log(values);
+                                // console.log(values);
                                 let params = {
                                     ...values,
                                     httpParams: {

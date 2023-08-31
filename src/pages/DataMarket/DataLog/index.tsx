@@ -99,7 +99,7 @@ const App = () => {
         },
         {
             onSuccess: (result, params) => {
-                console.log(result)
+                // console.log(result)
             }
         },
     );
@@ -116,7 +116,7 @@ const App = () => {
     }
 
     const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
+        // console.log('Failed:', errorInfo);
     };
     const [form] = Form.useForm();
     const onReset = () => {
