@@ -89,7 +89,7 @@ export default () => {
       hideInSearch: true,
     },
     {
-      title: 'Api类型',
+      title: 'API类型',
       key: 'apiType',
       dataIndex: 'apiType',
       align: 'center',

@@ -39,6 +39,9 @@ yarn build
 
 项目打包生成 dist 文件，当前打包文件放置在服务器/home/webpages 目录中，服务器采用 nginx 做请求代理
 
+- nginx配置地址：/etc/nginx/nginx.conf
+- 项目资源地址：/home/webPages/
+
 ### 代码规范化检查
 
 ```bash
