@@ -38,7 +38,18 @@ const App = () => {
             }
         },
     );
-
+    const apiMonitors = useRequest(
+        () => {
+            return {
+                url: `http://172.16.4.72:8612/data/market/apiMonitors`,
+                method: 'GET',
+            };
+        },
+        {
+            onSuccess: (result, params) => {
+            }
+        },
+    );
     const titleStyle = {
         background: 'white',
         padding: '8px 16px',
@@ -62,12 +73,12 @@ const App = () => {
                             <ProCard bordered >
                                 <Descriptions title="API总览" bordered>
                                 </Descriptions>
-                                {/* <div style={{ fontWeight: 'bold' }}>API调用总次数：{apiLogsCalls?.data?.[0].callTotal}</div> */}
+                                <div style={{ fontWeight: 'bold' }}>(API总数：{apiMonitors?.data?.[0].apiTotal})</div>
                                 <Row>
-                                    <Col span={12} >
+                                    <Col span={11} >
                                         <Pie2 />
                                     </Col>
-                                    <Col span={12} >
+                                    <Col span={13} >
                                         <Pie3 />
                                     </Col>
                                 </Row>
@@ -84,19 +95,21 @@ const App = () => {
                                     </Col>
                                     <Col span={8} offset={5}>
                                         <br></br>
+                                        <br></br>
+                                        <br></br>
                                         <Row>
-                                            <Col offset={4}>
+                                            <Col offset={8}>
                                                 <Statistic
-                                                    title="成功率"
+                                                    title="调用总成功率"
                                                     value={11.28}
                                                     precision={0}
-                                                    valueStyle={{ color: 'blue' }}
+                                                    valueStyle={{ color: 'green' }}
                                                     suffix="%"
                                                 />
                                             </Col>
                                         </Row>
                                         <br></br>
-                                        <Row>
+                                        {/* <Row>
                                             {apiLogsCalls?.data?.[0].dayGrowthRate < 0 ? (
                                                 <>
                                                     < Statistic
@@ -141,7 +154,7 @@ const App = () => {
                                                         />
                                                     </>)}
                                             </Col>
-                                        </Row>
+                                        </Row> */}
                                     </Col>
                                 </Row>
                             </ProCard>
