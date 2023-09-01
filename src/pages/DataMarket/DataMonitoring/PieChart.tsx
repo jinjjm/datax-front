@@ -92,6 +92,7 @@ export default (props: any) => {
                 },
             },
         },
+        color:["#65daab","red"],
         // 添加 中心统计文本 交互
         interactions: [
             {
@@ -105,6 +106,6 @@ export default (props: any) => {
             },
         ],
     };
-    return <Pie {...config} style={{ height: 200, width: 350 }} />;
+    return <Pie {...config} style={{ height: 220, width: 350 }} />;
 };
 
